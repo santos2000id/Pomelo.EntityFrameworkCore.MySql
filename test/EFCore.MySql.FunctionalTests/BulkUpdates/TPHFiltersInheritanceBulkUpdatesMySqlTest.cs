@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore.BulkUpdates.Inheritance;
+using Microsoft.EntityFrameworkCore.Query.Inheritance;
 using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.BulkUpdates;

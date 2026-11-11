@@ -1,9 +1,10 @@
+using Microsoft.EntityFrameworkCore.BulkUpdates.Inheritance;
+using Microsoft.EntityFrameworkCore.Query.Inheritance;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query;
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore.TestModels.Northwind;
 using Microsoft.EntityFrameworkCore.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
 {
@@ -24,9 +23,14 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_now(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_now(bool async)
         {
-            await base.Where_datetime_now(async);
+                var myDatetime = new DateTime(2015, 4, 10);
+
+                await AssertQuery(
+                    async,
+                    ss => ss.Set<Customer>().Where(c => DateTime.Now != myDatetime));
 
             AssertSql(
                 @"@__myDatetime_0='2015-04-10T00:00:00.0000000' (DbType = DateTime)
@@ -37,9 +41,14 @@ WHERE CURRENT_TIMESTAMP(6) <> @__myDatetime_0");
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_utcnow(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_utcnow(bool async)
         {
-            await base.Where_datetime_utcnow(async);
+                var myDatetime = new DateTime(2015, 4, 10);
+
+                await AssertQuery(
+                    async,
+                    ss => ss.Set<Customer>().Where(c => DateTime.UtcNow != myDatetime));
 
             AssertSql(
                 @"@__myDatetime_0='2015-04-10T00:00:00.0000000' (DbType = DateTime)
@@ -50,9 +59,10 @@ WHERE UTC_TIMESTAMP(6) <> @__myDatetime_0");
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_today(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_today(bool async)
         {
-            await base.Where_datetime_today(async);
+            await AssertQuery( async, ss => ss.Set<Employee>().Where(e => DateTime.Now.Date == DateTime.Today));
 
             AssertSql(
                 @"SELECT `e`.`EmployeeID`, `e`.`City`, `e`.`Country`, `e`.`FirstName`, `e`.`ReportsTo`, `e`.`Title`
@@ -61,9 +71,14 @@ WHERE CONVERT(CURRENT_TIMESTAMP(6), date) = CURDATE()");
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_date_component(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_date_component(bool async)
         {
-            await base.Where_datetime_date_component(async);
+                var myDatetime = new DateTime(1998, 5, 4);
+
+                await AssertQuery(
+                    async,
+                    ss => ss.Set<Order>().Where(o => o.OrderDate.Value.Date == myDatetime));
 
             AssertSql(
                 @"@__myDatetime_0='1998-05-04T00:00:00.0000000' (DbType = DateTime)
@@ -74,9 +89,10 @@ WHERE CONVERT(`o`.`OrderDate`, date) = @__myDatetime_0");
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_year_component(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_year_component(bool async)
         {
-            await base.Where_datetime_year_component(async);
+            await AssertQuery( async, ss => ss.Set<Order>().Where(o => o.OrderDate.Value.Year == 1998));
 
             AssertSql(
                 @"SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
@@ -85,9 +101,10 @@ WHERE EXTRACT(year FROM `o`.`OrderDate`) = 1998");
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_month_component(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_month_component(bool async)
         {
-            await base.Where_datetime_month_component(async);
+            await AssertQuery( async, ss => ss.Set<Order>().Where(o => o.OrderDate.Value.Month == 4));
 
             AssertSql(
                 @"SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
@@ -96,9 +113,10 @@ WHERE EXTRACT(month FROM `o`.`OrderDate`) = 4");
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_dayOfYear_component(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_dayOfYear_component(bool async)
         {
-            await base.Where_datetime_dayOfYear_component(async);
+            await AssertQuery( async, ss => ss.Set<Order>().Where(o => o.OrderDate.Value.DayOfYear == 68));
 
             AssertSql(
                 @"SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
@@ -107,9 +125,10 @@ WHERE DAYOFYEAR(`o`.`OrderDate`) = 68");
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_day_component(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_day_component(bool async)
         {
-            await base.Where_datetime_day_component(async);
+            await AssertQuery( async, ss => ss.Set<Order>().Where(o => o.OrderDate.Value.Day == 4));
 
             AssertSql(
                 @"SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
@@ -118,9 +137,10 @@ WHERE EXTRACT(day FROM `o`.`OrderDate`) = 4");
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_hour_component(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_hour_component(bool async)
         {
-            await base.Where_datetime_hour_component(async);
+            await AssertQuery( async, ss => ss.Set<Order>().Where(o => o.OrderDate.Value.Hour == 0));
 
             AssertSql(
 """
@@ -131,9 +151,10 @@ WHERE EXTRACT(hour FROM `o`.`OrderDate`) = 0
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_minute_component(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_minute_component(bool async)
         {
-            await base.Where_datetime_minute_component(async);
+            await AssertQuery( async, ss => ss.Set<Order>().Where(o => o.OrderDate.Value.Minute == 0));
 
             AssertSql(
 """
@@ -144,9 +165,10 @@ WHERE EXTRACT(minute FROM `o`.`OrderDate`) = 0
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_second_component(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_second_component(bool async)
         {
-            await base.Where_datetime_second_component(async);
+            await AssertQuery( async, ss => ss.Set<Order>().Where(o => o.OrderDate.Value.Second == 0));
 
             AssertSql(
 """
@@ -157,9 +179,10 @@ WHERE EXTRACT(second FROM `o`.`OrderDate`) = 0
         }
 
         [ConditionalTheory]
-        public override async Task Where_datetime_millisecond_component(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetime_millisecond_component(bool async)
         {
-            await base.Where_datetime_millisecond_component(async);
+            await AssertQuery( async, ss => ss.Set<Order>().Where(o => o.OrderDate.Value.Millisecond == 0));
 
             AssertSql(
 """
@@ -170,9 +193,10 @@ WHERE (EXTRACT(microsecond FROM `o`.`OrderDate`)) DIV (1000) = 0
         }
 
         [ConditionalTheory]
-        public override async Task Where_string_length(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_string_length(bool async)
         {
-            await base.Where_string_length(async);
+            await AssertQuery( async, ss => ss.Set<Customer>().Where(c => c.City.Length == 6));
             AssertSql(
                 @"SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
 FROM `Customers` AS `c`
@@ -180,9 +204,10 @@ WHERE CHAR_LENGTH(`c`.`City`) = 6");
         }
 
         [ConditionalTheory]
-        public override async Task Where_string_indexof(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_string_indexof(bool async)
         {
-            await base.Where_string_indexof(async);
+            await AssertQuery( async, ss => ss.Set<Customer>().Where(c => c.City.IndexOf("Sea") != -1));
 
             AssertSql(
                 @"SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
@@ -191,9 +216,10 @@ WHERE ((LOCATE('Sea', `c`.`City`) - 1) <> -1) OR `c`.`City` IS NULL");
         }
 
         [ConditionalTheory]
-        public override async Task Where_string_replace(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_string_replace(bool async)
         {
-            await base.Where_string_replace(async);
+            await AssertQuery( async, ss => ss.Set<Customer>().Where(c => c.City.Replace("Sea", "Rea") == "Reattle"));
 
             AssertSql(
                 @"SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
@@ -202,9 +228,10 @@ WHERE REPLACE(`c`.`City`, 'Sea', 'Rea') = 'Reattle'");
         }
 
         [ConditionalTheory]
-        public override async Task Where_string_substring(bool async)
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_string_substring(bool async)
         {
-            await base.Where_string_substring(async);
+            await AssertQuery( async, ss => ss.Set<Customer>().Where(c => c.City.Substring(1, 2) == "ea"));
 
             AssertSql(
                 @"SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
@@ -212,21 +239,21 @@ FROM `Customers` AS `c`
 WHERE SUBSTRING(`c`.`City`, 1 + 1, 2) = 'ea'");
         }
 
-        [ConditionalTheory(Skip = "issue #573")]
         public override Task Where_as_queryable_expression(bool async)
         {
+            Assert.Skip("issue #573");
             return base.Where_as_queryable_expression(async);
         }
 
-        [ConditionalTheory(Skip = "issue #552")]
         public override Task Where_multiple_contains_in_subquery_with_and(bool async)
         {
+            Assert.Skip("issue #552");
             return base.Where_multiple_contains_in_subquery_with_and(async);
         }
 
-        [ConditionalTheory(Skip = "issue #552")]
         public override Task Where_multiple_contains_in_subquery_with_or(bool async)
         {
+            Assert.Skip("issue #552");
             return base.Where_multiple_contains_in_subquery_with_or(async);
         }
 
@@ -277,9 +304,17 @@ FROM `Customers` AS `c`
 WHERE @__guidParameter_0 = UUID()");
         }
 
-        public override async Task Where_string_concat_method_comparison_2(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_string_concat_method_comparison_2(bool async)
         {
-            await base.Where_string_concat_method_comparison_2(async);
+
+        var i = "A";
+        var j = "B";
+
+        await AssertQuery(
+            async,
+            ss => ss.Set<Customer>().Where(c => string.Concat(i, j, c.CustomerID) == "ABANATR").Select(c => c.CustomerID));
 
             AssertSql(
 """
@@ -292,9 +327,18 @@ WHERE CONCAT(@__i_0, @__j_1, `c`.`CustomerID`) = 'ABANATR'
 """);
         }
 
-        public override async Task Where_string_concat_method_comparison_3(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_string_concat_method_comparison_3(bool async)
         {
-            await base.Where_string_concat_method_comparison_3(async);
+
+        var i = "A";
+        var j = "B";
+        var k = "C";
+
+        await AssertQuery(
+            async,
+            ss => ss.Set<Customer>().Where(c => string.Concat(i, j, k, c.CustomerID) == "ABCANTON").Select(c => c.CustomerID));
 
             AssertSql(
 """
@@ -598,9 +642,14 @@ FROM `Customers` AS `c`
 WHERE @__Concat_0 = `c`.`CompanyName`");
         }
 
-        public override async Task Where_bitwise_xor(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_bitwise_xor(bool async)
         {
-            await base.Where_bitwise_xor(async);
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().Where(c => (c.CustomerID == "ALFKI") ^ true));
 
             AssertSql(
 """
@@ -622,9 +671,14 @@ If we change MariaDbServerVersion.DefaultUtf8CiCollation and MariaDbServerVersio
 The error is:
     MySqlConnector.MySqlException : Illegal mix of collations (utf8mb4_bin,NONE) and (utf8mb4_general_ci,IMPLICIT) for operation '='
 """)]
-        public override Task Where_concat_string_int_comparison1(bool async)
+        public virtual Task Where_concat_string_int_comparison1(bool async)
         {
-            return base.Where_concat_string_int_comparison1(async);
+            var i = 10;
+
+            return AssertQuery(
+                async,
+                ss => ss.Set<Customer>().Where(c => c.CustomerID + i == c.CompanyName).Select(c => c.CustomerID),
+                assertEmpty: true);
         }
 
         // TODO: 9.0
@@ -639,9 +693,14 @@ If we change MariaDbServerVersion.DefaultUtf8CiCollation and MariaDbServerVersio
 The error is:
     MySqlConnector.MySqlException : Illegal mix of collations (utf8mb4_bin,NONE) and (utf8mb4_general_ci,IMPLICIT) for operation '='
 """)]
-        public override Task Where_concat_string_int_comparison2(bool async)
+        public virtual Task Where_concat_string_int_comparison2(bool async)
         {
-            return base.Where_concat_string_int_comparison2(async);
+            var i = 10;
+
+            return AssertQuery(
+                async,
+                ss => ss.Set<Customer>().Where(c => i + c.CustomerID == c.CompanyName).Select(c => c.CustomerID),
+                assertEmpty: true);
         }
 
         // TODO: 9.0
@@ -656,9 +715,15 @@ If we change MariaDbServerVersion.DefaultUtf8CiCollation and MariaDbServerVersio
 The error is:
     MySqlConnector.MySqlException : Illegal mix of collations (utf8mb4_bin,NONE) and (utf8mb4_general_ci,IMPLICIT) for operation '='
 """)]
-        public override Task Where_concat_string_int_comparison3(bool async)
+        public virtual Task Where_concat_string_int_comparison3(bool async)
         {
-            return base.Where_concat_string_int_comparison3(async);
+            var i = 10;
+            var j = 21;
+
+            return AssertQuery(
+                async,
+                ss => ss.Set<Customer>().Where(c => i + 20 + c.CustomerID + j + 42 == c.CompanyName).Select(c => c.CustomerID),
+                assertEmpty: true);
         }
 
         // TODO: 9.0
@@ -673,9 +738,9 @@ If we change MariaDbServerVersion.DefaultUtf8CiCollation and MariaDbServerVersio
 The error is:
     MySqlConnector.MySqlException : Illegal mix of collations (utf8mb4_bin,NONE) and (utf8mb4_general_ci,IMPLICIT) for operation '='
 """)]
-        public override Task Where_concat_string_int_comparison4(bool async)
+        public virtual Task Where_concat_string_int_comparison4(bool async)
         {
-            return base.Where_concat_string_int_comparison4(async);
+            return (AssertQuery( async, ss => ss.Set<Order>().Where(o => o.OrderID + o.CustomerID == o.CustomerID).Select(c => c.CustomerID), assertEmpty: true));
         }
 
         // TODO: 9.0

@@ -9,12 +9,15 @@
 
 ## Compatibility
 
+> **EF Core 11 / .NET 11 Migration:** This branch targets .NET 11 (`net11.0`), EF Core 11 (`11.0.0`), and MySqlConnector 2.6.2. The test suites have been upgraded to xUnit v3, with verified compatibility down to MySQL 5.6. To run tests against a local or remote MySQL instance, set `POMELO_TEST_CONNECTION` (e.g. `server=127.0.0.1;user id=root;password=...;port=3306;`).
+
 ### Dependencies
 
 The following versions of MySqlConnector, EF Core, .NET (Core), .NET Standard and .NET Framework are compatible with published releases of `Pomelo.EntityFrameworkCore.MySql`:
 
 Release | Branch                                                                                           | MySqlConnector     | EF Core | .NET (Core) | .NET Standard | .NET Framework
 --- |--------------------------------------------------------------------------------------------------|--------------------|:-------:|:-----------:| :---: | :---:
+11.0.0 | [feature/efcore-11](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/tree/feature/efcore-11) | >= 2.6.2           | 11.0.x  |   11.0+     | - | -
 [9.0.0](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql/9.0.0) | [main](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/tree/main)       | >= 2.4.0           |  9.0.x  |    8.0+     | - | -
 [8.0.3](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql/8.0.3) | [8.0-maint](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/tree/8.0-maint) | >= 2.3.5           |  8.0.x  |    8.0+     | - | -
 [7.0.0](https://www.nuget.org/packages/Pomelo.EntityFrameworkCore.MySql/7.0.0) | [7.0-maint](https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/tree/7.0-maint) | >= 2.2.5           |  7.0.x  |    6.0+     | - | -

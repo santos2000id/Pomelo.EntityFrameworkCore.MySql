@@ -13,7 +13,6 @@ using Pomelo.EntityFrameworkCore.MySql.Internal;
 using Pomelo.EntityFrameworkCore.MySql.Tests;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
@@ -30,9 +29,15 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
             //Fixture.TestSqlLoggerFactory.SetTestOutputHelper(testOutputHelper);
         }
 
-        public override async Task Select_bitwise_or(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Select_bitwise_or(bool async)
         {
-            await base.Select_bitwise_or(async);
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().OrderBy(c => c.CustomerID).Select(
+                c => new { c.CustomerID, Value = c.CustomerID == "ALFKI" | c.CustomerID == "ANATR" }));
 
         AssertSql(
 """
@@ -42,9 +47,16 @@ ORDER BY `c`.`CustomerID`
 """);
         }
 
-        public override async Task Select_bitwise_or_multiple(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Select_bitwise_or_multiple(bool async)
         {
-            await base.Select_bitwise_or_multiple(async);
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().OrderBy(c => c.CustomerID)
+                .Select(
+                    c => new { c.CustomerID, Value = c.CustomerID == "ALFKI" | c.CustomerID == "ANATR" | c.CustomerID == "ANTON" }));
 
         AssertSql(
 """
@@ -54,129 +66,15 @@ ORDER BY `c`.`CustomerID`
 """);
         }
 
-        public override async Task Select_bitwise_and(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Select_bitwise_and(bool async)
         {
-            await base.Select_bitwise_and(async);
 
-        AssertSql(
-"""
-SELECT `c`.`CustomerID`, FALSE AS `Value`
-FROM `Customers` AS `c`
-ORDER BY `c`.`CustomerID`
-""");
-        }
-
-        public override async Task Select_bitwise_and_or(bool async)
-        {
-            await base.Select_bitwise_and_or(async);
-
-        AssertSql(
-"""
-SELECT `c`.`CustomerID`, `c`.`CustomerID` = 'ANTON' AS `Value`
-FROM `Customers` AS `c`
-ORDER BY `c`.`CustomerID`
-""");
-        }
-
-        public override async Task Where_bitwise_or_with_logical_or(bool async)
-        {
-            await base.Where_bitwise_or_with_logical_or(async);
-
-        AssertSql(
-"""
-SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
-FROM `Customers` AS `c`
-WHERE `c`.`CustomerID` IN ('ALFKI', 'ANATR', 'ANTON')
-""");
-        }
-
-        public override async Task Where_bitwise_and_with_logical_and(bool async)
-        {
-            await base.Where_bitwise_and_with_logical_and(async);
-
-        AssertSql(
-"""
-SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
-FROM `Customers` AS `c`
-WHERE FALSE
-""");
-        }
-
-        public override async Task Where_bitwise_or_with_logical_and(bool async)
-        {
-            await base.Where_bitwise_or_with_logical_and(async);
-
-        AssertSql(
-"""
-SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
-FROM `Customers` AS `c`
-WHERE `c`.`CustomerID` IN ('ALFKI', 'ANATR') AND (`c`.`Country` = 'Germany')
-""");
-        }
-
-        public override async Task Where_bitwise_and_with_logical_or(bool async)
-        {
-            await base.Where_bitwise_and_with_logical_or(async);
-
-        AssertSql(
-"""
-SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
-FROM `Customers` AS `c`
-WHERE `c`.`CustomerID` = 'ANTON'
-""");
-        }
-
-        public override async Task Where_bitwise_binary_not(bool async)
-        {
-            await base.Where_bitwise_binary_not(async);
-
-            AssertSql(
-                @"@__negatedId_0='-10249'
-
-SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
-FROM `Orders` AS `o`
-WHERE CAST(~`o`.`OrderID` AS signed) = @__negatedId_0");
-        }
-
-        public override async Task Where_bitwise_binary_and(bool async)
-        {
-            await base.Where_bitwise_binary_and(async);
-
-            AssertSql(
-"""
-SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
-FROM `Orders` AS `o`
-WHERE CAST(`o`.`OrderID` & 10248 AS signed) = 10248
-""");
-        }
-
-        public override async Task Where_bitwise_binary_or(bool async)
-        {
-            await base.Where_bitwise_binary_or(async);
-
-            AssertSql(
-"""
-SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
-FROM `Orders` AS `o`
-WHERE CAST(`o`.`OrderID` | 10248 AS signed) = 10248
-""");
-        }
-
-        public override async Task Select_bitwise_or_with_logical_or(bool async)
-        {
-            await base.Select_bitwise_or_with_logical_or(async);
-
-        AssertSql(
-"""
-SELECT `c`.`CustomerID`, `c`.`CustomerID` IN ('ALFKI', 'ANATR', 'ANTON') AS `Value`
-FROM `Customers` AS `c`
-ORDER BY `c`.`CustomerID`
-""");
-        }
-
-        public override async Task Select_bitwise_and_with_logical_and(bool async)
-        {
-            await base.Select_bitwise_and_with_logical_and(async);
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().OrderBy(c => c.CustomerID).Select(
+                c => new { c.CustomerID, Value = c.CustomerID == "ALFKI" & c.CustomerID == "ANATR" }));
 
         AssertSql(
 """
@@ -187,6 +85,184 @@ ORDER BY `c`.`CustomerID`
         }
 
         [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Select_bitwise_and_or(bool async)
+        {
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().OrderBy(c => c.CustomerID)
+                .Select(
+                    c => new { c.CustomerID, Value = c.CustomerID == "ALFKI" & c.CustomerID == "ANATR" | c.CustomerID == "ANTON" }));
+
+        AssertSql(
+"""
+SELECT `c`.`CustomerID`, `c`.`CustomerID` = 'ANTON' AS `Value`
+FROM `Customers` AS `c`
+ORDER BY `c`.`CustomerID`
+""");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_bitwise_or_with_logical_or(bool async)
+        {
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().Where(c => c.CustomerID == "ALFKI" | c.CustomerID == "ANATR" || c.CustomerID == "ANTON"));
+
+        AssertSql(
+"""
+SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
+FROM `Customers` AS `c`
+WHERE `c`.`CustomerID` IN ('ALFKI', 'ANATR', 'ANTON')
+""");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_bitwise_and_with_logical_and(bool async)
+        {
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().Where(c => c.CustomerID == "ALFKI" & c.CustomerID == "ANATR" && c.CustomerID == "ANTON"),
+            assertEmpty: true);
+
+        AssertSql(
+"""
+SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
+FROM `Customers` AS `c`
+WHERE FALSE
+""");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_bitwise_or_with_logical_and(bool async)
+        {
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().Where(c => c.CustomerID == "ALFKI" | c.CustomerID == "ANATR" && c.Country == "Germany"));
+
+        AssertSql(
+"""
+SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
+FROM `Customers` AS `c`
+WHERE `c`.`CustomerID` IN ('ALFKI', 'ANATR') AND (`c`.`Country` = 'Germany')
+""");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_bitwise_and_with_logical_or(bool async)
+        {
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().Where(c => c.CustomerID == "ALFKI" & c.CustomerID == "ANATR" || c.CustomerID == "ANTON"));
+
+        AssertSql(
+"""
+SELECT `c`.`CustomerID`, `c`.`Address`, `c`.`City`, `c`.`CompanyName`, `c`.`ContactName`, `c`.`ContactTitle`, `c`.`Country`, `c`.`Fax`, `c`.`Phone`, `c`.`PostalCode`, `c`.`Region`
+FROM `Customers` AS `c`
+WHERE `c`.`CustomerID` = 'ANTON'
+""");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_bitwise_binary_not(bool async)
+        {
+
+        var negatedId = ~10248;
+
+        await AssertQuery(
+            async,
+            ss => ss.Set<Order>().Where(o => ~o.OrderID == negatedId));
+
+            AssertSql(
+                @"@__negatedId_0='-10249'
+
+SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
+FROM `Orders` AS `o`
+WHERE CAST(~`o`.`OrderID` AS signed) = @__negatedId_0");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_bitwise_binary_and(bool async)
+        {
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Order>().Where(o => (o.OrderID & 10248) == 10248));
+
+            AssertSql(
+"""
+SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
+FROM `Orders` AS `o`
+WHERE CAST(`o`.`OrderID` & 10248 AS signed) = 10248
+""");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_bitwise_binary_or(bool async)
+        {
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Order>().Where(o => (o.OrderID | 10248) == 10248));
+
+            AssertSql(
+"""
+SELECT `o`.`OrderID`, `o`.`CustomerID`, `o`.`EmployeeID`, `o`.`OrderDate`
+FROM `Orders` AS `o`
+WHERE CAST(`o`.`OrderID` | 10248 AS signed) = 10248
+""");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Select_bitwise_or_with_logical_or(bool async)
+        {
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().OrderBy(c => c.CustomerID).Select(
+                c => new { c.CustomerID, Value = c.CustomerID == "ALFKI" | c.CustomerID == "ANATR" || c.CustomerID == "ANTON" }));
+
+        AssertSql(
+"""
+SELECT `c`.`CustomerID`, `c`.`CustomerID` IN ('ALFKI', 'ANATR', 'ANTON') AS `Value`
+FROM `Customers` AS `c`
+ORDER BY `c`.`CustomerID`
+""");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Select_bitwise_and_with_logical_and(bool async)
+        {
+
+await  AssertQuery(
+            async,
+            ss => ss.Set<Customer>().OrderBy(c => c.CustomerID).Select(
+                c => new { c.CustomerID, Value = c.CustomerID == "ALFKI" & c.CustomerID == "ANATR" && c.CustomerID == "ANTON" }));
+
+        AssertSql(
+"""
+SELECT `c`.`CustomerID`, FALSE AS `Value`
+FROM `Customers` AS `c`
+ORDER BY `c`.`CustomerID`
+""");
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
         public override async Task Take_Skip(bool async)
         {
             await base.Take_Skip(async);
@@ -209,6 +285,7 @@ LIMIT 18446744073709551610 OFFSET @__p_1
         }
 
         [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
         public override async Task Select_expression_references_are_updated_correctly_with_subquery(bool async)
         {
             await base.Select_expression_references_are_updated_correctly_with_subquery(async);

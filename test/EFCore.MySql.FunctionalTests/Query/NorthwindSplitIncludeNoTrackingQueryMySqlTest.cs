@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore.TestUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities.DebugServices;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
 {
@@ -64,27 +63,27 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
                 elementAsserter: (e, a) => AssertInclude(e, a, new ExpectedInclude<Order>(o => o.OrderDetails)));
         }
 
-        [ConditionalTheory(Skip = "https://github.com/dotnet/efcore/issues/21202")]
         public override Task Include_collection_skip_no_order_by(bool async)
         {
+            Assert.Skip("https://github.com/dotnet/efcore/issues/21202");
             return base.Include_collection_skip_no_order_by(async);
         }
 
-        [ConditionalTheory(Skip = "https://github.com/dotnet/efcore/issues/21202")]
         public override Task Include_collection_skip_take_no_order_by(bool async)
         {
+            Assert.Skip("https://github.com/dotnet/efcore/issues/21202");
             return base.Include_collection_skip_take_no_order_by(async);
         }
 
-        [ConditionalTheory(Skip = "https://github.com/dotnet/efcore/issues/21202")]
         public override Task Include_collection_take_no_order_by(bool async)
         {
+            Assert.Skip("https://github.com/dotnet/efcore/issues/21202");
             return base.Include_collection_take_no_order_by(async);
         }
 
-        [ConditionalTheory(Skip = "https://github.com/dotnet/efcore/issues/21202")]
         public override Task Include_duplicate_collection_result_operator(bool async)
         {
+            Assert.Skip("https://github.com/dotnet/efcore/issues/21202");
             return base.Include_duplicate_collection_result_operator(async);
         }
 

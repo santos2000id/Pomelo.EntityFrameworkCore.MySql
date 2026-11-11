@@ -5,13 +5,16 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Internal;
 using Pomelo.EntityFrameworkCore.MySql.Tests;
+using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query;
 
-public class NonSharedPrimitiveCollectionsQueryMySqlTest : NonSharedPrimitiveCollectionsQueryRelationalTestBase
+public class NonSharedPrimitiveCollectionsQueryMySqlTest(NonSharedFixture fixture)
+    : NonSharedPrimitiveCollectionsQueryRelationalTestBase(fixture), IClassFixture<NonSharedFixture>
 {
     #region Support for specific element types
 
@@ -483,7 +486,9 @@ LIMIT 2
     {
         await base.Parameter_collection_Count_with_column_predicate_with_default_constants();
 
-        AssertSql(
+        if (AppConfig.ServerVersion.Supports.Values)
+        {
+            AssertSql(
 $"""
 SELECT `t`.`Id`
 FROM `TestEntity` AS `t`
@@ -492,6 +497,19 @@ WHERE (
     FROM (SELECT 2 AS `Value` UNION ALL VALUES {(AppConfig.ServerVersion.Supports.ValuesWithRows ? "ROW" : string.Empty)}(999)) AS `i`
     WHERE `i`.`Value` > `t`.`Id`) = 1
 """);
+        }
+        else
+        {
+            AssertSql(
+"""
+SELECT `t`.`Id`
+FROM `TestEntity` AS `t`
+WHERE (
+    SELECT COUNT(*)
+    FROM (SELECT CAST(2 AS signed) AS `Value` UNION ALL SELECT 999) AS `i`
+    WHERE `i`.`Value` > `t`.`Id`) = 1
+""");
+        }
     }
 
     public override async Task Parameter_collection_of_ints_Contains_int_with_default_constants()
@@ -538,7 +556,9 @@ WHERE `t`.`Id` IN (2, 999)
     {
         await base.Parameter_collection_Count_with_column_predicate_with_default_parameters_EF_Constant();
 
-        AssertSql(
+        if (AppConfig.ServerVersion.Supports.Values)
+        {
+            AssertSql(
 $"""
 SELECT `t`.`Id`
 FROM `TestEntity` AS `t`
@@ -547,6 +567,19 @@ WHERE (
     FROM (SELECT 2 AS `Value` UNION ALL VALUES {(AppConfig.ServerVersion.Supports.ValuesWithRows ? "ROW" : string.Empty)}(999)) AS `i`
     WHERE `i`.`Value` > `t`.`Id`) = 1
 """);
+        }
+        else
+        {
+            AssertSql(
+"""
+SELECT `t`.`Id`
+FROM `TestEntity` AS `t`
+WHERE (
+    SELECT COUNT(*)
+    FROM (SELECT CAST(2 AS signed) AS `Value` UNION ALL SELECT 999) AS `i`
+    WHERE `i`.`Value` > `t`.`Id`) = 1
+""");
+        }
     }
 
     public override async Task Parameter_collection_of_ints_Contains_int_with_default_parameters_EF_Constant()
@@ -578,18 +611,18 @@ FROM `TestEntityWithOwned` AS `t`
 
     protected override DbContextOptionsBuilder SetTranslateParameterizedCollectionsToConstants(DbContextOptionsBuilder optionsBuilder)
     {
-        new MySqlDbContextOptionsBuilder(optionsBuilder).TranslateParameterizedCollectionsToConstants();
+        new MySqlDbContextOptionsBuilder(optionsBuilder).UseParameterizedCollectionMode(ParameterTranslationMode.Constant);
 
         return optionsBuilder;
     }
 
     protected override DbContextOptionsBuilder SetTranslateParameterizedCollectionsToParameters(DbContextOptionsBuilder optionsBuilder)
     {
-        new MySqlDbContextOptionsBuilder(optionsBuilder).TranslateParameterizedCollectionsToParameters();
+        new MySqlDbContextOptionsBuilder(optionsBuilder).UseParameterizedCollectionMode(ParameterTranslationMode.Parameter);
 
         return optionsBuilder;
     }
 
-    protected override ITestStoreFactory TestStoreFactory
+    protected override ITestStoreFactory NonSharedTestStoreFactory
         => MySqlTestStoreFactory.Instance;
 }

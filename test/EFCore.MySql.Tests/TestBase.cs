@@ -11,15 +11,15 @@ namespace Pomelo.EntityFrameworkCore.MySql
     public class TestBase<TContext> : IDisposable, IAsyncLifetime
         where TContext : ContextBase, new()
     {
-        public async Task InitializeAsync()
+        public async ValueTask InitializeAsync()
         {
             TestStore = await MySqlTestStore.CreateInitializedAsync(StoreName);
         }
 
-        public Task DisposeAsync()
-            => Task.CompletedTask;
+        public ValueTask DisposeAsync()
+            => ValueTask.CompletedTask;
 
-        public virtual void Dispose() => TestStore.Dispose();
+        public virtual void Dispose() => TestStore.DisposeAsync().AsTask().GetAwaiter().GetResult();
 
         public virtual string StoreName => GetType().Name;
         public virtual MySqlTestStore TestStore { get; private set; }
@@ -39,7 +39,7 @@ namespace Pomelo.EntityFrameworkCore.MySql
                 options: options,
                 mySqlOptions: jetOptions);
 
-            await TestStore.CleanAsync(context);
+            await TestStore.CleanAsync(context, createTables: false);
 
             return context;
         }

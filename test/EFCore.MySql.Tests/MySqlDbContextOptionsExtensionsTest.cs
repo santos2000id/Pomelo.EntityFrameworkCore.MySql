@@ -9,6 +9,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure.Internal;
 using Pomelo.EntityFrameworkCore.MySql.Internal;
 using Pomelo.EntityFrameworkCore.MySql.Tests;
+using Microsoft.EntityFrameworkCore.TestUtilities;
 using Xunit;
 
 namespace Pomelo.EntityFrameworkCore.MySql
@@ -492,7 +493,7 @@ namespace Pomelo.EntityFrameworkCore.MySql
 
                 if (nullConnectionString)
                 {
-                    Assert.Equal(null, mySqlOptions.ConnectionString);
+                    Assert.Null(mySqlOptions.ConnectionString);
                 }
                 else
                 {

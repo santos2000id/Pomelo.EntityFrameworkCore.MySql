@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.TestUtilities;
 ﻿using System;
 using System.Data;
 using System.Threading.Tasks;
@@ -128,12 +129,12 @@ public class ExistingConnectionMySqlTest
                 await using var context = new NorthwindContext(options);
 
                 Assert.Equal(
+                    @"The connection string of a connection used by Pomelo.EntityFrameworkCore.MySql must contain ""AllowUserVariables=True;UseAffectedRows=False"".",
                     Assert.Throws<InvalidOperationException>(
                         () =>
                         {
                             context.GetService<IRelationalConnection>();
-                        }).Message,
-                    @"The connection string of a connection used by Pomelo.EntityFrameworkCore.MySql must contain ""AllowUserVariables=True;UseAffectedRows=False"".");
+                        }).Message);
             }
         }
     }
@@ -189,12 +190,12 @@ public class ExistingConnectionMySqlTest
                 await using var context = new NorthwindContext(options);
 
                 Assert.Equal(
+                    @"The connection string of a connection used by Pomelo.EntityFrameworkCore.MySql must contain ""AllowUserVariables=True;UseAffectedRows=False"".",
                     Assert.Throws<InvalidOperationException>(
                         () =>
                         {
                             context.GetService<IRelationalConnection>();
-                        }).Message,
-                    @"The connection string of a connection used by Pomelo.EntityFrameworkCore.MySql must contain ""AllowUserVariables=True;UseAffectedRows=False"".");
+                        }).Message);
             }
         }
     }

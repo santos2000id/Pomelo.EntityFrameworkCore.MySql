@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(PomeloTestTargetFramework)</TargetFramework>
+    <IsTestProject>true</IsTestProject>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Remove="xunit.core;xunit.assert;xunit.runner.console;Xunit.SkippableFact" />
+    <PackageReference Update="xunit.runner.visualstudio" VersionOverride="4.0.1" />
+    <ProjectReference Include="..\..\src\EFCore.MySql\EFCore.MySql.csproj" />
+    <Compile Include="..\EFCore.MySql.Tests\Migrations\ServerVersionTest.cs" Link="ServerVersionTest.cs" />
+    <Compile Include="..\EFCore.MySql.Tests\MySqlOptionsExtensionTest.cs" Link="MySqlOptionsExtensionTest.cs" />
+  </ItemGroup>
+</Project>

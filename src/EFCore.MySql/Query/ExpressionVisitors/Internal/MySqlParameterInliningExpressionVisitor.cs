@@ -23,8 +23,7 @@ public class MySqlParameterInliningExpressionVisitor : ExpressionVisitor
     private readonly ISqlExpressionFactory _sqlExpressionFactory;
     private readonly IMySqlOptions _options;
 
-    private IReadOnlyDictionary<string, object> _parametersValues;
-    private bool _canCache;
+    private ParametersCacheDecorator _parametersDecorator;
 
     private bool _shouldInlineParameters;
 
@@ -38,19 +37,15 @@ public class MySqlParameterInliningExpressionVisitor : ExpressionVisitor
         _options = options;
     }
 
-    public virtual Expression Process(Expression expression, IReadOnlyDictionary<string, object> parametersValues, out bool canCache)
+    public virtual Expression Process(Expression expression, ParametersCacheDecorator parametersDecorator)
     {
         Check.NotNull(expression, nameof(expression));
+        Check.NotNull(parametersDecorator, nameof(parametersDecorator));
 
-        _parametersValues = parametersValues;
-        _canCache = true;
+        _parametersDecorator = parametersDecorator;
         _shouldInlineParameters = false;
 
-        var result = Visit(expression);
-
-        canCache = _canCache;
-
-        return result;
+        return Visit(expression);
     }
 
     protected override Expression VisitExtension(Expression extensionExpression)
@@ -103,12 +98,10 @@ public class MySqlParameterInliningExpressionVisitor : ExpressionVisitor
             return sqlParameterExpression;
         }
 
-        _canCache = false;
-
         return new MySqlInlinedParameterExpression(
             sqlParameterExpression,
             (SqlConstantExpression)_sqlExpressionFactory.Constant(
-                _parametersValues[sqlParameterExpression.Name],
+                _parametersDecorator.GetAndDisableCaching()[sqlParameterExpression.InvariantName],
                 sqlParameterExpression.TypeMapping));
     }
 

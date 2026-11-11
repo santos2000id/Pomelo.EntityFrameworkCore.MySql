@@ -184,8 +184,8 @@ CREATE TABLE MountainsColumns (
                         Assert.All(
                             table.Columns, c => { Assert.Equal("MountainsColumns", c.Table.Name); });
 
-                        Assert.Single(table.Columns.Where(c => c.Name == "Id"));
-                        Assert.Single(table.Columns.Where(c => c.Name == "Name"));
+                        Assert.Single(table.Columns, c => c.Name == "Id");
+                        Assert.Single(table.Columns, c => c.Name == "Name");
                     },
                 @"DROP TABLE IF EXISTS MountainsColumns;");
         }
@@ -255,8 +255,8 @@ CREATE INDEX IX_INDEX on IndexTable ( IndexProperty );",
                         Assert.All(
                             table.Indexes, c => { Assert.Equal("IndexTable", c.Table.Name); });
 
-                        Assert.Single(table.Indexes.Where(c => c.Name == "IX_NAME"));
-                        Assert.Single(table.Indexes.Where(c => c.Name == "IX_INDEX"));
+                        Assert.Single(table.Indexes, c => c.Name == "IX_NAME");
+                        Assert.Single(table.Indexes, c => c.Name == "IX_INDEX");
                     },
                 @"DROP TABLE IF EXISTS IndexTable;");
         }
@@ -351,12 +351,12 @@ CREATE TABLE `PlaceDetails` (
                 Enumerable.Empty<string>(),
                 dbModel =>
                     {
-                        var table = Assert.Single(dbModel.Tables.Where(t => t.Name == "PlaceDetails"));
-                        var jsonCharacteristicsColumn = Assert.Single(table.Columns.Where(c => c.Name == "JsonCharacteristics"));
-                        var textDescriptionColumn = Assert.Single(table.Columns.Where(c => c.Name == "TextDescription"));
-                        var textDependingOnValidJsonCharacteristicsColumn = Assert.Single(table.Columns.Where(c => c.Name == "TextDependingOnValidJsonCharacteristics"));
-                        var textCharacteristicsColumn = Assert.Single(table.Columns.Where(c => c.Name == "TextCharacteristics"));
-                        var otherJsonCharacteristicsColumn = Assert.Single(table.Columns.Where(c => c.Name == "OtherJsonCharacteristics"));
+                        var table = Assert.Single(dbModel.Tables, t => t.Name == "PlaceDetails");
+                        var jsonCharacteristicsColumn = Assert.Single(table.Columns, c => c.Name == "JsonCharacteristics");
+                        var textDescriptionColumn = Assert.Single(table.Columns, c => c.Name == "TextDescription");
+                        var textDependingOnValidJsonCharacteristicsColumn = Assert.Single(table.Columns, c => c.Name == "TextDependingOnValidJsonCharacteristics");
+                        var textCharacteristicsColumn = Assert.Single(table.Columns, c => c.Name == "TextCharacteristics");
+                        var otherJsonCharacteristicsColumn = Assert.Single(table.Columns, c => c.Name == "OtherJsonCharacteristics");
 
                         Assert.Equal("json", jsonCharacteristicsColumn.StoreType);
                         Assert.Null(jsonCharacteristicsColumn[MySqlAnnotationNames.CharSet]);
@@ -396,9 +396,9 @@ CREATE TABLE `GuidTable`  (
                 Enumerable.Empty<string>(),
                 dbModel =>
                     {
-                        var table = Assert.Single(dbModel.Tables.Where(t => t.Name == "GuidTable"));
-                        var guidTableIdColumn = Assert.Single(table.Columns.Where(c => c.Name == "GuidTableId"));
-                        var defaultUuidColumn = Assert.Single(table.Columns.Where(c => c.Name == "DefaultUuid"));
+                        var table = Assert.Single(dbModel.Tables, t => t.Name == "GuidTable");
+                        var guidTableIdColumn = Assert.Single(table.Columns, c => c.Name == "GuidTableId");
+                        var defaultUuidColumn = Assert.Single(table.Columns, c => c.Name == "DefaultUuid");
 
                         Assert.Equal(ValueGenerated.OnAdd, guidTableIdColumn.ValueGenerated);
                         Assert.Null(guidTableIdColumn.DefaultValueSql);
@@ -424,10 +424,10 @@ CREATE TABLE `DefaultValueTable` (
                 Enumerable.Empty<string>(),
                 dbModel =>
                     {
-                        var table = Assert.Single(dbModel.Tables.Where(t => t.Name == "DefaultValueTable"));
-                        var defaultValueIntColumn = Assert.Single(table.Columns.Where(c => c.Name == "DefaultValueInt"));
-                        var defaultValueStringColumn = Assert.Single(table.Columns.Where(c => c.Name == "DefaultValueString"));
-                        var defaultValueFunctionColumn = Assert.Single(table.Columns.Where(c => c.Name == "DefaultValueFunction"));
+                        var table = Assert.Single(dbModel.Tables, t => t.Name == "DefaultValueTable");
+                        var defaultValueIntColumn = Assert.Single(table.Columns, c => c.Name == "DefaultValueInt");
+                        var defaultValueStringColumn = Assert.Single(table.Columns, c => c.Name == "DefaultValueString");
+                        var defaultValueFunctionColumn = Assert.Single(table.Columns, c => c.Name == "DefaultValueFunction");
 
                         Assert.Equal("'42'", defaultValueIntColumn.DefaultValueSql);
                         Assert.Equal("'Answer to everything'", defaultValueStringColumn.DefaultValueSql);
@@ -450,7 +450,7 @@ CREATE TABLE `DefaultValueSimpleExpressionTable` (
                 Enumerable.Empty<string>(),
                 dbModel =>
                 {
-                    var table = Assert.Single(dbModel.Tables.Where(t => t.Name == "DefaultValueSimpleExpressionTable"));
+                    var table = Assert.Single(dbModel.Tables, t => t.Name == "DefaultValueSimpleExpressionTable");
                     var defaultValueSimpleFunctionExpressionColumn = table.Columns.SingleOrDefault(c => c.Name == "DefaultValueSimpleFunctionExpression");
 
                     Assert.Equal("rand()", defaultValueSimpleFunctionExpressionColumn.DefaultValueSql);
@@ -473,9 +473,9 @@ CREATE TABLE `DefaultValueExpressionTable` (
                 Enumerable.Empty<string>(),
                 dbModel =>
                     {
-                        var table = Assert.Single(dbModel.Tables.Where(t => t.Name == "DefaultValueExpressionTable"));
-                        var defaultValueExpressionColumn = Assert.Single(table.Columns.Where(c => c.Name == "DefaultValueExpression"));
-                        var defaultValueExpressionIntColumn = Assert.Single(table.Columns.Where(c => c.Name == "DefaultValueExpressionInt"));
+                        var table = Assert.Single(dbModel.Tables, t => t.Name == "DefaultValueExpressionTable");
+                        var defaultValueExpressionColumn = Assert.Single(table.Columns, c => c.Name == "DefaultValueExpression");
+                        var defaultValueExpressionIntColumn = Assert.Single(table.Columns, c => c.Name == "DefaultValueExpressionInt");
 
                         Assert.Contains("CONCAT(CAST(42 as char", defaultValueExpressionColumn.DefaultValueSql, StringComparison.OrdinalIgnoreCase);
                         Assert.Contains(" is the answer to everything", defaultValueExpressionColumn.DefaultValueSql, StringComparison.OrdinalIgnoreCase);
@@ -512,10 +512,10 @@ FROM `item_data` `item`;",
                 Enumerable.Empty<string>(),
                 dbModel =>
                 {
-                    var table = Assert.Single(dbModel.Tables.Where(t => t.Name == "item_data_view"));
-                    var textDateTimeConvertedColumn = Assert.Single(table.Columns.Where(c => c.Name == "text_datetime_converted"));
-                    var realDateTime1ConvertedColumn = Assert.Single(table.Columns.Where(c => c.Name == "real_datetime_1_converted"));
-                    var realDateTime2OriginalColumn = Assert.Single(table.Columns.Where(c => c.Name == "real_datetime_2_original"));
+                    var table = Assert.Single(dbModel.Tables, t => t.Name == "item_data_view");
+                    var textDateTimeConvertedColumn = Assert.Single(table.Columns, c => c.Name == "text_datetime_converted");
+                    var realDateTime1ConvertedColumn = Assert.Single(table.Columns, c => c.Name == "real_datetime_1_converted");
+                    var realDateTime2OriginalColumn = Assert.Single(table.Columns, c => c.Name == "real_datetime_2_original");
 
                     Assert.Equal("datetime", textDateTimeConvertedColumn.StoreType);
                     Assert.Equal("datetime", realDateTime1ConvertedColumn.StoreType);
@@ -1197,7 +1197,7 @@ CREATE TABLE DependentTable (
 
                         Assert.Equal(2, foreignKeys.Count);
 
-                        var principalFk = Assert.Single(foreignKeys.Where(f => f.PrincipalTable.Name == "PrincipalTable"));
+                        var principalFk = Assert.Single(foreignKeys, f => f.PrincipalTable.Name == "PrincipalTable");
 
                         // ReSharper disable once PossibleNullReferenceException
                         Assert.Equal("DependentTable", principalFk.Table.Name);
@@ -1206,7 +1206,7 @@ CREATE TABLE DependentTable (
                         Assert.Equal(new List<string> { "Id" }, principalFk.PrincipalColumns.Select(ic => ic.Name).ToList());
                         Assert.Equal(ReferentialAction.Cascade, principalFk.OnDelete);
 
-                        var anotherPrincipalFk = Assert.Single(foreignKeys.Where(f => f.PrincipalTable.Name == "AnotherPrincipalTable"));
+                        var anotherPrincipalFk = Assert.Single(foreignKeys, f => f.PrincipalTable.Name == "AnotherPrincipalTable");
 
                         // ReSharper disable once PossibleNullReferenceException
                         Assert.Equal("DependentTable", anotherPrincipalFk.Table.Name);
@@ -1374,7 +1374,7 @@ DROP TABLE IF EXISTS PrincipalTable;"
                 new[] { "dbo" },
                 dbModel =>
                     {
-                        var (Level, Id, Message) = Assert.Single(Log.Where(t => t.Level == LogLevel.Warning));
+                        var (Level, Id, Message) = Assert.Single(Log, t => t.Level == LogLevel.Warning);
                     },
                 @"DROP TABLE IF EXISTS Everest;");
         }
@@ -1390,7 +1390,7 @@ DROP TABLE IF EXISTS PrincipalTable;"
                     {
                         Assert.Empty(dbModel.Tables);
 
-                        var (Level, Id, Message) = Assert.Single(Log.Where(t => t.Level == LogLevel.Warning));
+                        var (Level, Id, Message) = Assert.Single(Log, t => t.Level == LogLevel.Warning);
                     },
                 @"DROP TABLE IF EXISTS Blank;");
         }
@@ -1413,7 +1413,7 @@ CREATE TABLE DependentTable (
                 Enumerable.Empty<string>(),
                 dbModel =>
                     {
-                        var (Level, Id, Message) = Assert.Single(Log.Where(t => t.Level == LogLevel.Warning));
+                        var (Level, Id, Message) = Assert.Single(Log, t => t.Level == LogLevel.Warning);
                     },
                 @"
 DROP TABLE IF EXISTS DependentTable;
@@ -1438,7 +1438,7 @@ CREATE TABLE DependentTable (
                 Enumerable.Empty<string>(),
                 dbModel =>
                     {
-                        var (Level, Id, Message) = Assert.Single(Log.Where(t => t.Level == LogLevel.Warning));
+                        var (Level, Id, Message) = Assert.Single(Log, t => t.Level == LogLevel.Warning);
                     },
                 @"
 DROP TABLE IF EXISTS DependentTable;

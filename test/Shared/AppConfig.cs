@@ -28,7 +28,10 @@ namespace Pomelo.EntityFrameworkCore.MySql.Tests
         {
             get
             {
-                var csb = new MySqlConnectionStringBuilder(Config["Data:ConnectionString"]);
+                // POMELO_TEST_CONNECTION takes precedence, so credentials can stay out of config.json.
+                var connectionString = Environment.GetEnvironmentVariable("POMELO_TEST_CONNECTION");
+                var csb = new MySqlConnectionStringBuilder(
+                    string.IsNullOrWhiteSpace(connectionString) ? Config["Data:ConnectionString"] : connectionString);
 
                 if (EfPort.HasValue)
                 {

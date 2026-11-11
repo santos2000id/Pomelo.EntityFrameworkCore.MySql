@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Compile Remove="Scaffolding\Baselines\**\*" />
+    <PackageReference Remove="xunit.core;xunit.assert;xunit.runner.console;Xunit.SkippableFact" />
     <None Include="Scaffolding\Baselines\**\*" />
   </ItemGroup>
 

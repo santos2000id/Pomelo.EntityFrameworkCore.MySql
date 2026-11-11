@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query;
 
@@ -183,7 +182,7 @@ public abstract class DateOnlyQueryMySqlTestBase<TFixture> : QueryTestBase<TFixt
 
     protected virtual DbContext CreateContext() => Fixture.CreateContext();
 
-    public abstract class DateOnlyQueryMySqlFixtureBase : SharedStoreFixtureBase<PoolableDbContext>, IQueryFixtureBase, ITestSqlLoggerFactory
+    public abstract class DateOnlyQueryMySqlFixtureBase : QueryFixtureBase<PoolableDbContext>, IQueryFixtureBase, ITestSqlLoggerFactory
     {
         protected override string StoreName => "DateOnlyQueryTest";
         public TestSqlLoggerFactory TestSqlLoggerFactory => (TestSqlLoggerFactory)ListLoggerFactory;
@@ -204,17 +203,17 @@ public abstract class DateOnlyQueryMySqlTestBase<TFixture> : QueryTestBase<TFixt
             return context;
         }
 
-        public Func<DbContext> GetContextCreator()
+        public override Func<DbContext> GetContextCreator()
             => CreateContext;
 
-        public ISetSource GetExpectedData()
+        public override ISetSource GetExpectedData()
             => new DateOnlyQueryData();
 
-        public IReadOnlyDictionary<Type, object> EntitySorters
+        public override IReadOnlyDictionary<Type, object> EntitySorters
             => new Dictionary<Type, Func<object, object>> { { typeof(Model.IceCream), e => ((Model.IceCream)e)?.IceCreamId }, }.ToDictionary(
             e => e.Key, e => (object)e.Value);
 
-        public IReadOnlyDictionary<Type, object> EntityAsserters
+        public override IReadOnlyDictionary<Type, object> EntityAsserters
             => new Dictionary<Type, Action<object, object>>
             {
                 {

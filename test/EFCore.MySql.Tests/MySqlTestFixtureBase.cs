@@ -37,7 +37,7 @@ namespace Pomelo.EntityFrameworkCore.MySql
             _initializeEmpty = initializeEmpty;
         }
 
-        public async Task InitializeAsync()
+        public async ValueTask InitializeAsync()
         {
             // We branch here, because CreateDefaultDbContext depends on TestStore.Name by default, which would not be available yet in
             // the MySqlTestStore.RecreateInitialized(StoreName) call.
@@ -59,12 +59,12 @@ namespace Pomelo.EntityFrameworkCore.MySql
             SetupDatabase();
         }
 
-        public Task DisposeAsync()
-            => Task.CompletedTask;
+        public ValueTask DisposeAsync()
+            => ValueTask.CompletedTask;
 
         protected override void Dispose(bool disposing)
         {
-            TestStore.Dispose();
+            TestStore.DisposeAsync().AsTask().GetAwaiter().GetResult();
             base.Dispose(disposing);
         }
 

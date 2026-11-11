@@ -18,9 +18,9 @@ namespace Pomelo.EntityFrameworkCore.MySql.Migrations
         public void TestValidVersion(string input, ServerType serverType, string actualVersion, bool supportsRenameIndex)
         {
             var serverVersion = ServerVersion.Parse(input);
-            Assert.Equal(serverVersion.Type, serverType);
-            Assert.Equal(serverVersion.Version, new Version(actualVersion));
-            Assert.Equal(serverVersion.Supports.RenameIndex, supportsRenameIndex);
+            Assert.Equal(serverType, serverVersion.Type);
+            Assert.Equal(new Version(actualVersion), serverVersion.Version);
+            Assert.Equal(supportsRenameIndex, serverVersion.Supports.RenameIndex);
         }
 
         [Theory]
@@ -29,7 +29,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Migrations
         [InlineData("8-mysql")]
         public void TestInvalidVersion(string input)
         {
-            Assert.Throws<InvalidOperationException>(() => ServerVersion.Parse("unknown"));
+            Assert.Throws<InvalidOperationException>(() => ServerVersion.Parse(input));
         }
     }
 }

@@ -9,7 +9,6 @@ using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
@@ -171,10 +170,12 @@ WHERE `l1`.`Level2_Name` IS NOT NULL AND (LEFT(`l1`.`Level2_Name`, CHAR_LENGTH(`
         }
 
         [ConditionalTheory(Skip = "https://github.com/dotnet/efcore/issues/26104")]
+        [MemberData(nameof(IsAsyncData))]
         public override Task GroupBy_aggregate_where_required_relationship(bool async)
             => base.GroupBy_aggregate_where_required_relationship(async);
 
         [ConditionalTheory(Skip = "https://github.com/dotnet/efcore/issues/26104")]
+        [MemberData(nameof(IsAsyncData))]
         public override Task GroupBy_aggregate_where_required_relationship_2(bool async)
             => base.GroupBy_aggregate_where_required_relationship_2(async);
 
@@ -196,6 +197,7 @@ WHERE `l1`.`Level2_Name` IS NOT NULL AND (LEFT(`l1`.`Level2_Name`, CHAR_LENGTH(`
         }
 
         [ConditionalTheory(Skip = "Does not throw an EqualException, but still does not work.")]
+        [MemberData(nameof(IsAsyncData))]
         public override async Task Nested_SelectMany_correlated_with_join_table_correctly_translated_to_apply(bool async)
         {
             // DefaultIfEmpty on child collection. Issue #19095.

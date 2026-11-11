@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Data.Common;
 using System.IO;
@@ -108,13 +108,19 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities
 
         public static MySqlDbContextOptionsBuilder AddOptions(MySqlDbContextOptionsBuilder builder)
         {
-            return builder
-                // Our UseMySql() methods explicitly set TranslateParameterizedCollectionsToConstants() as the default, which is not the
-                // default that the EF Core tests expect.
-                .TranslateParameterizedCollectionsToParameters()
+            builder = builder
                 .UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)
                 .CommandTimeout(GetCommandTimeout())
                 .ExecutionStrategy(d => new TestMySqlRetryingExecutionStrategy(d));
+
+            if (AppConfig.ServerVersion.Supports.JsonTable)
+            {
+                // Our UseMySql() methods explicitly set TranslateParameterizedCollectionsToConstants() as the default, which is not the
+                // default that the EF Core tests expect.
+                builder.UseParameterizedCollectionMode(ParameterTranslationMode.Parameter);
+            }
+
+            return builder;
             // .EnableIndexOptimizedBooleanColumns(); // TODO: Activate for all test for .NET 5. Tests should use
             //       `ONLY_FULL_GROUP_BY` to ensure correct working of the
             //       expression visitor in all cases, which is blocked by
@@ -184,7 +190,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities
                         await clean(context);
                     }
 
-                    await CleanAsync(context);
+                    await CleanAsync(context, createTables: false);
                 }
 
                 databaseSetupSql = GetAlterDatabaseStatement(Name, DatabaseCharSet, DatabaseCollation);
@@ -242,9 +248,9 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities
                     return 0;
                 }, string.Empty);
 
-        public override Task CleanAsync(DbContext context)
+        public override Task CleanAsync(DbContext context, bool createTables)
         {
-            context.Database.EnsureClean();
+            context.Database.EnsureClean(createTables);
             return Task.CompletedTask;
         }
 

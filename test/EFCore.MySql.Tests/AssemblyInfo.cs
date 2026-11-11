@@ -17,4 +17,4 @@ using Xunit;
 
 // Our custom MySqlXunitTestFrameworkDiscoverer class allows filtering whole classes like SupportedServerVersionConditionAttribute, instead
 // of just the test cases. This is necessary, if a fixture is database server version dependent.
-[assembly: TestFramework("Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities.Xunit.MySqlXunitTestFramework", "Pomelo.EntityFrameworkCore.MySql.FunctionalTests")]
+[assembly: TestFramework(typeof(Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities.Xunit.MySqlXunitTestFramework))]

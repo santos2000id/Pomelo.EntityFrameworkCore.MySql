@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Pomelo Foundation. All rights reserved.
 // Licensed under the MIT. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Utilities;
@@ -27,8 +26,8 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.Internal
         public virtual QueryCompilationContext Create(bool async)
             => new MySqlQueryCompilationContext(_dependencies, _relationalDependencies, async);
 
-        public virtual QueryCompilationContext CreatePrecompiled(bool async, IReadOnlySet<string> nonNullableReferenceTypeParameters)
+        public virtual QueryCompilationContext CreatePrecompiled(bool async)
             => new MySqlQueryCompilationContext(
-                _dependencies, _relationalDependencies, async, precompiling: true, nonNullableReferenceTypeParameters);
+                _dependencies, _relationalDependencies, async, precompiling: true);
     }
 }

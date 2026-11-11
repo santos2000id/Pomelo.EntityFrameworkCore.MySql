@@ -232,6 +232,12 @@ jobs:
           Copy-Item test/EFCore.MySql.FunctionalTests/config.json.example test/EFCore.MySql.FunctionalTests/config.json
           Copy-Item test/EFCore.MySql.IntegrationTests/appsettings.ci.json test/EFCore.MySql.IntegrationTests/appsettings.json
           Copy-Item test/EFCore.MySql.IntegrationTests/config.json.example test/EFCore.MySql.IntegrationTests/config.json
+      - name: EF Core 11 upgrade tests
+        if: ${{ env.skipTests != 'true' }}
+        shell: pwsh
+        run: |
+          $env:POMELO_TEST_CONNECTION = (Get-Content test/EFCore.MySql.FunctionalTests/config.json -Raw | ConvertFrom-Json).Data.ConnectionString
+          dotnet test test/EFCore.MySql.UpgradeTests -c Debug --logger "GitHubActions;report-warnings=false"
       - name: Setup Integration Tests
         shell: pwsh
         run: |

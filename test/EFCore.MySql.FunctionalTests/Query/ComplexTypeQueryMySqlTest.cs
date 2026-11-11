@@ -1,11 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.TestModels.ComplexTypeModel;
 using Microsoft.EntityFrameworkCore.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query;
 
@@ -19,9 +20,8 @@ public class ComplexTypeQueryMySqlTest : ComplexTypeQueryRelationalTestBase<
         Fixture.TestSqlLoggerFactory.SetTestOutputHelper(testOutputHelper);
     }
 
-    public override async Task Filter_on_property_inside_complex_type(bool async)
+    public virtual async Task Filter_on_property_inside_complex_type()
     {
-        await base.Filter_on_property_inside_complex_type(async);
 
         AssertSql(
 """
@@ -31,9 +31,8 @@ WHERE `c`.`ShippingAddress_ZipCode` = 7728
 """);
     }
 
-    public override async Task Filter_on_property_inside_nested_complex_type(bool async)
+    public virtual async Task Filter_on_property_inside_nested_complex_type()
     {
-        await base.Filter_on_property_inside_nested_complex_type(async);
 
         AssertSql(
 """
@@ -116,7 +115,7 @@ WHERE `c0`.`ShippingAddress_ZipCode` <> 7728
     {
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => base.Project_complex_type_via_optional_navigation(async));
 
-        Assert.Equal(RelationalStrings.CannotProjectNullableComplexType("Customer.ShippingAddress#Address"), exception.Message);
+        Assert.Equal("You are attempting to project out complex type '" + "Customer.ShippingAddress#Address" + "' via an optional navigation; that is currently not supported. Either project out the complex type in a non-optional context, or project the containing entity type along with the complex type.", exception.Message);
     }
 
     public override async Task Project_complex_type_via_required_navigation(bool async)
@@ -383,9 +382,16 @@ FROM `Customer` AS `c0`
 );
     }
 
-    public override async Task Complex_type_equals_null(bool async)
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual async Task Complex_type_equals_null(bool async)
     {
-        await base.Complex_type_equals_null(async);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => AssertQuery(async, ss => ss.Set<Customer>().Where(c => c.ShippingAddress == null)));
+
+        Assert.Equal("Comparing complex types to null is not supported.", exception.Message);
+
+        AssertSql();
 
         AssertSql(
 );
@@ -512,7 +518,7 @@ WHERE `v0`.`ShippingAddress_ZipCode` <> 7728
     {
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => base.Project_struct_complex_type_via_optional_navigation(async));
 
-        Assert.Equal(RelationalStrings.CannotProjectNullableComplexType("ValuedCustomer.ShippingAddress#AddressStruct"), exception.Message);
+        Assert.Equal("You are attempting to project out complex type '" + "ValuedCustomer.ShippingAddress#AddressStruct" + "' via an optional navigation; that is currently not supported. Either project out the complex type in a non-optional context, or project the containing entity type along with the complex type.", exception.Message);
     }
 
     public override async Task Project_struct_complex_type_via_required_navigation(bool async)

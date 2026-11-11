@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.TestUtilities;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
@@ -9,7 +10,6 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Tests;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
 {
@@ -31,6 +31,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
             => base.Distance_constant_srid_4326(async);
 
         [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
         public override Task GeometryType(bool async)
             => AssertQuery(
                 async,

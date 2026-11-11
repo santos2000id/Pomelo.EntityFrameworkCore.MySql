@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.TestUtilities;
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,6 @@ using Microsoft.EntityFrameworkCore.TestModels.GearsOfWarModel;
 using System.Data.Common;
 using Pomelo.EntityFrameworkCore.MySql.Tests;
 using Xunit;
-using Xunit.Abstractions;
 
 // ReSharper disable NegativeEqualityExpression
 // ReSharper disable RedundantBoolCompare

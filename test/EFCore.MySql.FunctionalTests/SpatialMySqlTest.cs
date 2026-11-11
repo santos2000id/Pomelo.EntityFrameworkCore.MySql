@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.TestUtilities;
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -36,8 +37,10 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests
             Assert.True(double.IsNaN(entity.PointZM.M));
         }
 
-        [ConditionalFact(Skip = "Point.Empty is currently not supported by MySQL and MariaDB.")]
         public override void Translators_handle_static_members()
-            => base.Translators_handle_static_members();
+        {
+            Assert.Skip("Point.Empty is currently not supported by MySQL and MariaDB.");
+            base.Translators_handle_static_members();
+        }
     }
 }

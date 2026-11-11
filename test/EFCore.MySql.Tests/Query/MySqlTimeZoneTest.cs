@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.TestUtilities;
 using Xunit;
 
 namespace Pomelo.EntityFrameworkCore.MySql.Query
@@ -49,7 +50,7 @@ FROM `Container` AS `c`
 WHERE (`c`.`DeliveredDateTimeOffset` = `c`.`DeliveredDateTimeUtc`) AND (CONVERT_TZ(`c`.`DeliveredDateTimeOffset`, '+00:00', `c`.`DeliveredTimeZone`) = `c`.`DeliveredDateTimeLocal`)
 LIMIT 2
 """,
-                Fixture.Sql);
+                Fixture.Sql.Replace("\r\n", "\n"));
         }
 
         [ConditionalFact]
@@ -73,7 +74,7 @@ FROM `Container` AS `c`
 WHERE CONVERT_TZ(`c`.`DeliveredDateTimeOffset`, '+00:00', @@session.time_zone) = TIMESTAMP '2023-12-31 15:00:00'
 LIMIT 2
 """,
-                Fixture.Sql);
+                Fixture.Sql.Replace("\r\n", "\n"));
         }
 
         private static void SetSessionTimeZone(MySqlTimeZoneFixture.MySqlTimeZoneContext context)

@@ -181,7 +181,7 @@ DROP PROCEDURE {MigrationsScript};
         private string _productVersionColumnName;
 
         // Customized implementation.
-        protected virtual IModel EnsureModel()
+        protected override IModel EnsureModel()
         {
             if (_model == null)
             {

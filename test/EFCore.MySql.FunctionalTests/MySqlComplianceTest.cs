@@ -36,7 +36,6 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests
             typeof(NorthwindQueryTaggingQueryTestBase<>),
 
             // TODO: 9.0
-            typeof(AdHocComplexTypeQueryTestBase),
             typeof(AdHocPrecompiledQueryRelationalTestBase),
             typeof(PrecompiledQueryRelationalTestBase),
             typeof(PrecompiledSqlPregenerationQueryRelationalTestBase),

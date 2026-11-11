@@ -248,7 +248,8 @@ namespace Pomelo.EntityFrameworkCore.MySql.Storage.Internal
                         }},
 
                     // json
-                    { typeof(MySqlJsonString), _jsonDefaultString }
+                    { typeof(MySqlJsonString), _jsonDefaultString },
+                    { typeof(JsonTypePlaceholder), _jsonDefaultString }
                 };
 
             // Boolean
@@ -331,7 +332,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Storage.Internal
                 }
 
                 if (storeTypeName.Equals("json", StringComparison.OrdinalIgnoreCase) &&
-                    (clrType == null || clrType == typeof(string) || clrType == typeof(MySqlJsonString)))
+                    (clrType == null || clrType == typeof(string) || clrType == typeof(MySqlJsonString) || clrType == typeof(JsonTypePlaceholder)))
                 {
                     return _jsonDefaultString;
                 }

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.Behaviors;
 
@@ -45,8 +44,8 @@ ORDER BY COUNT(*) DESC
         using var dataReader = command.ExecuteReader();
 
         Assert.True(dataReader.Read());
-        Assert.Equal((int)dataReader["Year"], 2025);
-        Assert.Equal((long)dataReader["Count"], 2);
+        Assert.Equal(2025, (int)dataReader["Year"]);
+        Assert.Equal(2, (long)dataReader["Count"]);
         Assert.False(dataReader.Read());
     }
 
@@ -81,8 +80,8 @@ ORDER BY COUNT(*) DESC
         using var dataReader = command.ExecuteReader();
 
         Assert.True(dataReader.Read());
-        Assert.Equal((int)dataReader["Year"], 2025);
-        Assert.Equal((long)dataReader["Count"], 2);
+        Assert.Equal(2025, (int)dataReader["Year"]);
+        Assert.Equal(2, (long)dataReader["Count"]);
         Assert.False(dataReader.Read());
     }
 
@@ -101,11 +100,11 @@ ORDER BY COUNT(*) DESC
         using var dataReader = command.ExecuteReader();
 
         Assert.True(dataReader.Read());
-        Assert.Equal((int)dataReader["Year"], 2025);
-        Assert.Equal((long)dataReader["Count"], 2);
+        Assert.Equal(2025, (int)dataReader["Year"]);
+        Assert.Equal(2, (long)dataReader["Count"]);
         Assert.True(dataReader.Read());
-        Assert.Equal((int)dataReader["Year"], 2036);
-        Assert.Equal((long)dataReader["Count"], 1);
+        Assert.Equal(2036, (int)dataReader["Year"]);
+        Assert.Equal(1, (long)dataReader["Count"]);
         Assert.False(dataReader.Read());
     }
 

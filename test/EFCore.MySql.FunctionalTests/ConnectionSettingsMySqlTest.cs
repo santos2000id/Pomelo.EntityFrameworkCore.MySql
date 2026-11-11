@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.TestUtilities;
 ﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -41,8 +42,10 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests
                 .ToList();
 
             var sqlResult = context.SimpleGuidEntities
+#pragma warning disable EF1003 // Intentional: this test verifies raw SQL with a concatenated literal.
                 .FromSqlRaw("select * from `SimpleGuidEntities` where `GuidValue` = " + sqlEquivalent)
                 .ToList();
+#pragma warning restore EF1003
 
             Assert.Single(result);
             Assert.Equal(new Guid("850368D8-93EA-4023-ACC7-6FA6E4C3B27F"), result[0].GuidValue);

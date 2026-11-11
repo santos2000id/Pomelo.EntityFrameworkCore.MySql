@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.TestUtilities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
     public partial class NorthwindSelectQueryMySqlTest
     {
         [SupportedServerVersionLessThanCondition(nameof(ServerVersionSupport.CrossApply))]
+        [ConditionalTheory]
         [MemberData(nameof(IsAsyncData))]
         public virtual Task CrossApply_not_supported_throws(bool async)
         {
@@ -18,6 +20,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
         }
 
         [SupportedServerVersionLessThanCondition(nameof(ServerVersionSupport.OuterApply))]
+        [ConditionalTheory]
         [MemberData(nameof(IsAsyncData))]
         public virtual Task OuterApply_not_supported_throws(bool async)
         {

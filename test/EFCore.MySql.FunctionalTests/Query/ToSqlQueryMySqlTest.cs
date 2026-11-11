@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.TestUtilities;
@@ -6,9 +7,9 @@ using Xunit;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query;
 
-public class ToSqlQueryMySqlTest : ToSqlQueryTestBase
+public class ToSqlQueryMySqlTest(NonSharedFixture fixture) : ToSqlQueryTestBase(fixture)
 {
-    protected override ITestStoreFactory TestStoreFactory
+    protected override ITestStoreFactory NonSharedTestStoreFactory
         => MySqlTestStoreFactory.Instance;
 
     [ConditionalFact]

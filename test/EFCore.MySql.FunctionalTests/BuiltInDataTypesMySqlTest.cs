@@ -18,7 +18,6 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Tests;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests
 {
@@ -26,6 +25,425 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests
     public class BuiltInDataTypesMySqlTest :
         BuiltInDataTypesTestBase<BuiltInDataTypesMySqlTest.BuiltInDataTypesMySqlFixture>
     {
+        protected class BuiltInNullableDataTypes : BuiltInNullableDataTypesBase
+        {
+            public int PartitionId { get; set; }
+            public string TestString { get; set; }
+            public byte[] TestByteArray { get; set; }
+            public short? TestNullableInt16 { get; set; }
+            public int? TestNullableInt32 { get; set; }
+            public long? TestNullableInt64 { get; set; }
+            public double? TestNullableDouble { get; set; }
+            public decimal? TestNullableDecimal { get; set; }
+            public DateTime? TestNullableDateTime { get; set; }
+            public DateTimeOffset? TestNullableDateTimeOffset { get; set; }
+            public TimeSpan? TestNullableTimeSpan { get; set; }
+            public DateOnly? TestNullableDateOnly { get; set; }
+            public TimeOnly? TestNullableTimeOnly { get; set; }
+            public float? TestNullableSingle { get; set; }
+            public bool? TestNullableBoolean { get; set; }
+            public byte? TestNullableByte { get; set; }
+            public ushort? TestNullableUnsignedInt16 { get; set; }
+            public uint? TestNullableUnsignedInt32 { get; set; }
+            public ulong? TestNullableUnsignedInt64 { get; set; }
+            public char? TestNullableCharacter { get; set; }
+            public sbyte? TestNullableSignedByte { get; set; }
+
+            // ReSharper disable MemberHidesStaticFromOuterClass
+            public Enum64? Enum64 { get; set; }
+            public Enum32? Enum32 { get; set; }
+            public Enum16? Enum16 { get; set; }
+            public Enum8? Enum8 { get; set; }
+            public EnumU64? EnumU64 { get; set; }
+            public EnumU32? EnumU32 { get; set; }
+            public EnumU16? EnumU16 { get; set; }
+
+            public EnumS8? EnumS8 { get; set; }
+            // ReSharper restore MemberHidesStaticFromOuterClass
+        }
+
+        protected class NullableBackedDataTypes
+        {
+            private short? _int16;
+            private int? _int32;
+            private long? _int64;
+            private double? _double;
+            private decimal? _decimal;
+            private DateTime? _dateTime;
+            private DateTimeOffset? _dateTimeOffset;
+            private TimeSpan? _timeSpan;
+            private DateOnly? _dateOnly;
+            private TimeOnly? _timeOnly;
+            private float? _single;
+            private bool? _boolean;
+            private byte? _byte;
+            private ushort? _unsignedInt16;
+            private uint? _unsignedInt32;
+            private ulong? _unsignedInt64;
+            private char? _character;
+            private sbyte? _signedByte;
+            private Enum64? _enum64;
+            private Enum32? _enum32;
+            private Enum16? _enum16;
+            private Enum8? _enum8;
+            private EnumU64? _enumU64;
+            private EnumU32? _enumU32;
+            private EnumU16? _enumU16;
+            private EnumS8? _enumS8;
+
+            [DatabaseGenerated(DatabaseGeneratedOption.None)]
+            public int Id { get; set; }
+
+            public int PartitionId { get; set; }
+
+            public short Int16
+            {
+                get => (short)_int16;
+                set => _int16 = value;
+            }
+
+            public int Int32
+            {
+                get => (int)_int32;
+                set => _int32 = value;
+            }
+
+            public long Int64
+            {
+                get => (long)_int64;
+                set => _int64 = value;
+            }
+
+            public double Double
+            {
+                get => (double)_double;
+                set => _double = value;
+            }
+
+            public decimal Decimal
+            {
+                get => (decimal)_decimal;
+                set => _decimal = value;
+            }
+
+            public DateTime DateTime
+            {
+                get => (DateTime)_dateTime;
+                set => _dateTime = value;
+            }
+
+            public DateTimeOffset DateTimeOffset
+            {
+                get => (DateTimeOffset)_dateTimeOffset;
+                set => _dateTimeOffset = value;
+            }
+
+            public TimeSpan TimeSpan
+            {
+                get => (TimeSpan)_timeSpan;
+                set => _timeSpan = value;
+            }
+
+            public DateOnly DateOnly
+            {
+                get => (DateOnly)_dateOnly;
+                set => _dateOnly = value;
+            }
+
+            public TimeOnly TimeOnly
+            {
+                get => (TimeOnly)_timeOnly;
+                set => _timeOnly = value;
+            }
+
+            public float Single
+            {
+                get => (float)_single;
+                set => _single = value;
+            }
+
+            public bool Boolean
+            {
+                get => (bool)_boolean;
+                set => _boolean = value;
+            }
+
+            public byte Byte
+            {
+                get => (byte)_byte;
+                set => _byte = value;
+            }
+
+            public ushort UnsignedInt16
+            {
+                get => (ushort)_unsignedInt16;
+                set => _unsignedInt16 = value;
+            }
+
+            public uint UnsignedInt32
+            {
+                get => (uint)_unsignedInt32;
+                set => _unsignedInt32 = value;
+            }
+
+            public ulong UnsignedInt64
+            {
+                get => (ulong)_unsignedInt64;
+                set => _unsignedInt64 = value;
+            }
+
+            public char Character
+            {
+                get => (char)_character;
+                set => _character = value;
+            }
+
+            public sbyte SignedByte
+            {
+                get => (sbyte)_signedByte;
+                set => _signedByte = value;
+            }
+
+            public Enum64 Enum64
+            {
+                get => (Enum64)_enum64;
+                set => _enum64 = value;
+            }
+
+            public Enum32 Enum32
+            {
+                get => (Enum32)_enum32;
+                set => _enum32 = value;
+            }
+
+            public Enum16 Enum16
+            {
+                get => (Enum16)_enum16;
+                set => _enum16 = value;
+            }
+
+            public Enum8 Enum8
+            {
+                get => (Enum8)_enum8;
+                set => _enum8 = value;
+            }
+
+            public EnumU64 EnumU64
+            {
+                get => (EnumU64)_enumU64;
+                set => _enumU64 = value;
+            }
+
+            public EnumU32 EnumU32
+            {
+                get => (EnumU32)_enumU32;
+                set => _enumU32 = value;
+            }
+
+            public EnumU16 EnumU16
+            {
+                get => (EnumU16)_enumU16;
+                set => _enumU16 = value;
+            }
+
+            public EnumS8 EnumS8
+            {
+                get => (EnumS8)_enumS8;
+                set => _enumS8 = value;
+            }
+        }
+
+        protected class NonNullableBackedDataTypes
+        {
+            private short _int16;
+            private int _int32;
+            private long _int64;
+            private double _double;
+            private decimal _decimal;
+            private DateTime _dateTime;
+            private DateTimeOffset _dateTimeOffset;
+            private TimeSpan _timeSpan;
+            private DateOnly _dateOnly;
+            private TimeOnly _timeOnly;
+            private float _single;
+            private bool _boolean;
+            private byte _byte;
+            private ushort _unsignedInt16;
+            private uint _unsignedInt32;
+            private ulong _unsignedInt64;
+            private char _character;
+            private sbyte _signedByte;
+            private Enum64 _enum64;
+            private Enum32 _enum32;
+            private Enum16 _enum16;
+            private Enum8 _enum8;
+            private EnumU64 _enumU64;
+            private EnumU32 _enumU32;
+            private EnumU16 _enumU16;
+            private EnumS8 _enumS8;
+
+            [DatabaseGenerated(DatabaseGeneratedOption.None)]
+            public int Id { get; set; }
+
+            public int PartitionId { get; set; }
+
+            public short? Int16
+            {
+                get => _int16;
+                set => _int16 = (short)value;
+            }
+
+            public int? Int32
+            {
+                get => _int32;
+                set => _int32 = (int)value;
+            }
+
+            public long? Int64
+            {
+                get => _int64;
+                set => _int64 = (long)value;
+            }
+
+            public double? Double
+            {
+                get => _double;
+                set => _double = (double)value;
+            }
+
+            public decimal? Decimal
+            {
+                get => _decimal;
+                set => _decimal = (decimal)value;
+            }
+
+            public DateTime? DateTime
+            {
+                get => _dateTime;
+                set => _dateTime = (DateTime)value;
+            }
+
+            public DateTimeOffset? DateTimeOffset
+            {
+                get => _dateTimeOffset;
+                set => _dateTimeOffset = (DateTimeOffset)value;
+            }
+
+            public TimeSpan? TimeSpan
+            {
+                get => _timeSpan;
+                set => _timeSpan = (TimeSpan)value;
+            }
+
+            public DateOnly? DateOnly
+            {
+                get => _dateOnly;
+                set => _dateOnly = (DateOnly)value;
+            }
+
+            public TimeOnly? TimeOnly
+            {
+                get => _timeOnly;
+                set => _timeOnly = (TimeOnly)value;
+            }
+
+            public float? Single
+            {
+                get => _single;
+                set => _single = (float)value;
+            }
+
+            public bool? Boolean
+            {
+                get => _boolean;
+                set => _boolean = (bool)value;
+            }
+
+            public byte? Byte
+            {
+                get => _byte;
+                set => _byte = (byte)value;
+            }
+
+            public ushort? UnsignedInt16
+            {
+                get => _unsignedInt16;
+                set => _unsignedInt16 = (ushort)value;
+            }
+
+            public uint? UnsignedInt32
+            {
+                get => _unsignedInt32;
+                set => _unsignedInt32 = (uint)value;
+            }
+
+            public ulong? UnsignedInt64
+            {
+                get => _unsignedInt64;
+                set => _unsignedInt64 = (ulong)value;
+            }
+
+            public char? Character
+            {
+                get => _character;
+                set => _character = (char)value;
+            }
+
+            public sbyte? SignedByte
+            {
+                get => _signedByte;
+                set => _signedByte = (sbyte)value;
+            }
+
+            public Enum64? Enum64
+            {
+                get => _enum64;
+                set => _enum64 = (Enum64)value;
+            }
+
+            public Enum32? Enum32
+            {
+                get => _enum32;
+                set => _enum32 = (Enum32)value;
+            }
+
+            public Enum16? Enum16
+            {
+                get => _enum16;
+                set => _enum16 = (Enum16)value;
+            }
+
+            public Enum8? Enum8
+            {
+                get => _enum8;
+                set => _enum8 = (Enum8)value;
+            }
+
+            public EnumU64? EnumU64
+            {
+                get => _enumU64;
+                set => _enumU64 = (EnumU64)value;
+            }
+
+            public EnumU32? EnumU32
+            {
+                get => _enumU32;
+                set => _enumU32 = (EnumU32)value;
+            }
+
+            public EnumU16? EnumU16
+            {
+                get => _enumU16;
+                set => _enumU16 = (EnumU16)value;
+            }
+
+            public EnumS8? EnumS8
+            {
+                get => _enumS8;
+                set => _enumS8 = (EnumS8)value;
+            }
+        }
+
         public BuiltInDataTypesMySqlTest(BuiltInDataTypesMySqlFixture fixture, ITestOutputHelper testOutputHelper)
             : base(fixture)
         {
@@ -876,7 +1294,8 @@ WHERE `m`.`TimeSpanAsTime` = @__timeSpan_0",
 
         // Overridden because of TestNullableDateTimeOffset, since MySQL does not offer a native data type to save a date/time with
         // timezone.
-        public override async Task Can_insert_and_read_back_all_nullable_data_types_with_values_set_to_non_null()
+        [ConditionalFact]
+        public virtual async Task Can_insert_and_read_back_all_nullable_data_types_with_values_set_to_non_null()
         {
             using (var context = CreateContext())
             {
@@ -1522,7 +1941,7 @@ UnicodeDataTypes.StringUnicode ---> [nullable longtext] [MaxLength = -1]
         #region https://github.com/dotnet/efcore/issues/26068
 
         [ConditionalFact]
-        public override async Task Can_insert_and_read_back_all_non_nullable_data_types()
+        public virtual async Task Can_insert_and_read_back_all_non_nullable_data_types()
         {
             using (var context = CreateContext())
             {
@@ -1596,7 +2015,7 @@ UnicodeDataTypes.StringUnicode ---> [nullable longtext] [MaxLength = -1]
         }
 
         [ConditionalFact]
-        public override async Task Can_insert_and_read_back_non_nullable_backed_data_types()
+        public virtual async Task Can_insert_and_read_back_non_nullable_backed_data_types()
         {
             using (var context = CreateContext())
             {
@@ -1670,7 +2089,7 @@ UnicodeDataTypes.StringUnicode ---> [nullable longtext] [MaxLength = -1]
         }
 
         [ConditionalFact]
-        public override async Task Can_insert_and_read_back_nullable_backed_data_types()
+        public virtual async Task Can_insert_and_read_back_nullable_backed_data_types()
         {
             using (var context = CreateContext())
             {
@@ -1931,6 +2350,149 @@ UnicodeDataTypes.StringUnicode ---> [nullable longtext] [MaxLength = -1]
             protected override void OnModelCreating(ModelBuilder modelBuilder, DbContext context)
             {
                 base.OnModelCreating(modelBuilder, context);
+                modelBuilder.Entity<BuiltInNullableDataTypes>(
+                    eb =>
+                    {
+                        eb.HasData(
+                            new BuiltInNullableDataTypes
+                            {
+                                Id = 13,
+                                PartitionId = 1,
+                                TestNullableInt16 = -1234,
+                                TestNullableInt32 = -123456789,
+                                TestNullableInt64 = -1234567890123456789L,
+                                TestNullableDouble = -1.23456789,
+                                TestNullableDecimal = -1234567890.01M,
+                                TestNullableDateTimeOffset = new DateTimeOffset(new DateTime(), TimeSpan.FromHours(-8.0)),
+                                TestNullableTimeSpan = new TimeSpan(0, 10, 9, 8, 7),
+                                TestNullableDateOnly = new DateOnly(2020, 3, 1),
+                                TestNullableTimeOnly = new TimeOnly(12, 30, 45, 123),
+                                TestNullableSingle = -1.234F,
+                                TestNullableBoolean = true,
+                                TestNullableByte = 255,
+                                TestNullableUnsignedInt16 = 1234,
+                                TestNullableUnsignedInt32 = 1234565789U,
+                                TestNullableUnsignedInt64 = 1234567890123456789UL,
+                                TestNullableCharacter = 'a',
+                                TestNullableSignedByte = -128,
+                                Enum64 = Enum64.SomeValue,
+                                Enum32 = Enum32.SomeValue,
+                                Enum16 = Enum16.SomeValue,
+                                Enum8 = Enum8.SomeValue,
+                                EnumU64 = EnumU64.SomeValue,
+                                EnumU32 = EnumU32.SomeValue,
+                                EnumU16 = EnumU16.SomeValue,
+                                EnumS8 = EnumS8.SomeValue
+                            });
+
+                        eb.HasData(
+                            new sbyte?[] { null, -10, -7, -4, -3, -2, -1, 0, 1, 2, 3, 8, 15 }
+                                .Select(
+                                    (x, i) =>
+                                        new BuiltInNullableDataTypes
+                                        {
+                                            Id = 17 + i,
+                                            PartitionId = 2,
+                                            TestNullableInt16 = x,
+                                            TestNullableInt32 = x,
+                                            TestNullableInt64 = x,
+                                            TestNullableDouble = x * 0.25,
+                                            TestNullableDecimal = x * 0.2M,
+                                            TestNullableDateTimeOffset = new DateTimeOffset(new DateTime(), TimeSpan.FromHours(-8.0)),
+                                            TestNullableTimeSpan = new TimeSpan(0, 10, 9, 8, 7),
+                                            TestNullableDateOnly = new DateOnly(2020, 3, 1),
+                                            TestNullableTimeOnly = new TimeOnly(12, 30, 45, 123),
+                                            TestNullableSingle = x * 0.25F,
+                                            TestNullableBoolean = x == null ? null : x > 0,
+                                            TestNullableByte = (byte?)(10 + x),
+                                            TestNullableUnsignedInt16 = (byte?)(10 + x),
+                                            TestNullableUnsignedInt32 = (byte?)(10 + x),
+                                            TestNullableUnsignedInt64 = (byte?)(10 + x),
+                                            TestNullableCharacter = 'a',
+                                            TestNullableSignedByte = x,
+                                            Enum64 = Enum64.SomeValue,
+                                            Enum32 = Enum32.SomeValue,
+                                            Enum16 = Enum16.SomeValue,
+                                            Enum8 = Enum8.SomeValue,
+                                            EnumU64 = EnumU64.SomeValue,
+                                            EnumU32 = EnumU32.SomeValue,
+                                            EnumU16 = EnumU16.SomeValue,
+                                            EnumS8 = EnumS8.SomeValue
+                                        }
+                                )
+                        );
+
+                        eb.Property(e => e.Id).ValueGeneratedNever();
+                    });
+
+                modelBuilder.Entity<NullableBackedDataTypes>()
+                    .HasData(
+                        new NullableBackedDataTypes
+                        {
+                            Id = 13,
+                            PartitionId = 1,
+                            Int16 = -1234,
+                            Int32 = -123456789,
+                            Int64 = -1234567890123456789L,
+                            Double = -1.23456789,
+                            Decimal = -1234567890.01M,
+                            DateTime = new DateTime(1973, 9, 3),
+                            DateTimeOffset = new DateTimeOffset(new DateTime(), TimeSpan.FromHours(-8.0)),
+                            TimeSpan = new TimeSpan(0, 10, 9, 8, 7),
+                            DateOnly = new DateOnly(2020, 3, 1),
+                            TimeOnly = new TimeOnly(12, 30, 45, 123),
+                            Single = -1.234F,
+                            Boolean = true,
+                            Byte = 255,
+                            UnsignedInt16 = 1234,
+                            UnsignedInt32 = 1234565789U,
+                            UnsignedInt64 = 1234567890123456789UL,
+                            Character = 'a',
+                            SignedByte = -128,
+                            Enum64 = Enum64.SomeValue,
+                            Enum32 = Enum32.SomeValue,
+                            Enum16 = Enum16.SomeValue,
+                            Enum8 = Enum8.SomeValue,
+                            EnumU64 = EnumU64.SomeValue,
+                            EnumU32 = EnumU32.SomeValue,
+                            EnumU16 = EnumU16.SomeValue,
+                            EnumS8 = EnumS8.SomeValue
+                        });
+
+                modelBuilder.Entity<NonNullableBackedDataTypes>()
+                    .HasData(
+                        new NonNullableBackedDataTypes
+                        {
+                            Id = 13,
+                            PartitionId = 1,
+                            Int16 = -1234,
+                            Int32 = -123456789,
+                            Int64 = -1234567890123456789L,
+                            Double = -1.23456789,
+                            Decimal = -1234567890.01M,
+                            DateTime = new DateTime(1973, 9, 3),
+                            DateTimeOffset = new DateTimeOffset(new DateTime(), TimeSpan.FromHours(-8.0)),
+                            TimeSpan = new TimeSpan(0, 10, 9, 8, 7),
+                            DateOnly = new DateOnly(2020, 3, 1),
+                            TimeOnly = new TimeOnly(12, 30, 45, 123),
+                            Single = -1.234F,
+                            Boolean = true,
+                            Byte = 255,
+                            UnsignedInt16 = 1234,
+                            UnsignedInt32 = 1234565789U,
+                            UnsignedInt64 = 1234567890123456789UL,
+                            Character = 'a',
+                            SignedByte = -128,
+                            Enum64 = Enum64.SomeValue,
+                            Enum32 = Enum32.SomeValue,
+                            Enum16 = Enum16.SomeValue,
+                            Enum8 = Enum8.SomeValue,
+                            EnumU64 = EnumU64.SomeValue,
+                            EnumU32 = EnumU32.SomeValue,
+                            EnumU16 = EnumU16.SomeValue,
+                            EnumS8 = EnumS8.SomeValue
+                        });
+
 
                 modelBuilder.Entity<MappedDataTypes>(
                     b =>

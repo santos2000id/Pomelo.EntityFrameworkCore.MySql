@@ -41,42 +41,38 @@ namespace Pomelo.EntityFrameworkCore.MySql.Internal
         }
 
         /// <inheritdoc />
-        protected override void ValidateJsonEntities(
-            IModel model,
+        protected override void ValidateEntityType(
+            IEntityType entityType,
             IDiagnosticsLogger<DbLoggerCategory.Model.Validation> logger)
         {
-            foreach (var entityType in model.GetEntityTypes())
+            if (entityType.IsMappedToJson())
             {
-                if (entityType.IsMappedToJson())
-                {
-                    throw new InvalidOperationException(MySqlStrings.Ef7CoreJsonMappingNotSupported);
-                }
+                throw new InvalidOperationException(MySqlStrings.Ef7CoreJsonMappingNotSupported);
             }
+
+            base.ValidateEntityType(entityType, logger);
         }
 
         /// <inheritdoc />
         protected override void ValidateStoredProcedures(
-            IModel model,
+            IEntityType entityType,
             IDiagnosticsLogger<DbLoggerCategory.Model.Validation> logger)
         {
-            base.ValidateStoredProcedures(model, logger);
+            base.ValidateStoredProcedures(entityType, logger);
 
-            foreach (var entityType in model.GetEntityTypes())
+            if (entityType.GetDeleteStoredProcedure() is { } deleteStoredProcedure)
             {
-                if (entityType.GetDeleteStoredProcedure() is { } deleteStoredProcedure)
-                {
-                    ValidateSproc(deleteStoredProcedure, logger);
-                }
+                ValidateSproc(deleteStoredProcedure, logger);
+            }
 
-                if (entityType.GetInsertStoredProcedure() is { } insertStoredProcedure)
-                {
-                    ValidateSproc(insertStoredProcedure, logger);
-                }
+            if (entityType.GetInsertStoredProcedure() is { } insertStoredProcedure)
+            {
+                ValidateSproc(insertStoredProcedure, logger);
+            }
 
-                if (entityType.GetUpdateStoredProcedure() is { } updateStoredProcedure)
-                {
-                    ValidateSproc(updateStoredProcedure, logger);
-                }
+            if (entityType.GetUpdateStoredProcedure() is { } updateStoredProcedure)
+            {
+                ValidateSproc(updateStoredProcedure, logger);
             }
 
             static void ValidateSproc(IStoredProcedure sproc, IDiagnosticsLogger<DbLoggerCategory.Model.Validation> logger)

@@ -41,6 +41,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.IntegrationTests
             }
         }
 
+#pragma warning disable ASPDEPR008 // Startup-based integration host; migrating to IHost requires restructuring Startup.
         public static IWebHost BuildWebHost(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
@@ -48,6 +49,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.IntegrationTests
                 .UseStartup<Startup>()
                 .Build();
         }
+#pragma warning restore ASPDEPR008
 
     }
 }

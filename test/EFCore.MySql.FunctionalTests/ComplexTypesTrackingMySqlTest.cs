@@ -1,3 +1,4 @@
+using Xunit;
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,14 +9,17 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities;
-using Xunit.Abstractions;
+
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests;
 
-public class ComplexTypesTrackingMySqlTest : ComplexTypesTrackingTestBase<ComplexTypesTrackingMySqlTest.MySqlFixture>
+[SupportedServerVersionCondition(nameof(ServerVersionSupport.Json))]
+public class ComplexTypesTrackingMySqlTest : ComplexTypesTrackingRelationalTestBase<ComplexTypesTrackingMySqlTest.MySqlFixture>
 {
     public ComplexTypesTrackingMySqlTest(MySqlFixture fixture, ITestOutputHelper testOutputHelper)
-        : base(fixture)
+        : base(fixture, testOutputHelper)
     {
         fixture.TestSqlLoggerFactory.Clear();
         fixture.TestSqlLoggerFactory.SetTestOutputHelper(testOutputHelper);
@@ -24,13 +28,10 @@ public class ComplexTypesTrackingMySqlTest : ComplexTypesTrackingTestBase<Comple
     protected override void UseTransaction(DatabaseFacade facade, IDbContextTransaction transaction)
         => facade.UseTransaction(transaction.GetDbTransaction());
 
-    public class MySqlFixture : FixtureBase
+    public class MySqlFixture : RelationalFixtureBase
     {
         protected override ITestStoreFactory TestStoreFactory
             => MySqlTestStoreFactory.Instance;
-
-        public TestSqlLoggerFactory TestSqlLoggerFactory
-            => (TestSqlLoggerFactory)ListLoggerFactory;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder, DbContext context)
         {

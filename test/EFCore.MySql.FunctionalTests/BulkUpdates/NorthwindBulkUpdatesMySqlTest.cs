@@ -9,7 +9,6 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Tests;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.BulkUpdates;
 
@@ -530,9 +529,19 @@ INNER JOIN (
 """);
     }
 
-    public override async Task Delete_with_left_join(bool async)
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual async Task Delete_with_left_join(bool async)
     {
-        await base.Delete_with_left_join(async);
+
+await  AssertDelete(
+            async,
+            ss => from od in ss.Set<OrderDetail>().Where(e => e.OrderID < 10276)
+                  join o in ss.Set<Order>().Where(o => o.OrderID < 10300).OrderBy(e => e.OrderID).Skip(0).Take(100)
+                      on od.OrderID equals o.OrderID into grouping
+                  from o in grouping.DefaultIfEmpty()
+                  select od,
+            rowsAffectedCount: 74);
 
         AssertSql(
 """
@@ -1086,9 +1095,10 @@ WHERE `c`.`CustomerID` LIKE 'F%'
         AssertExecuteUpdateSql();
     }
 
-    public override async Task Update_with_invalid_lambda_throws(bool async)
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual async Task Update_with_invalid_lambda_throws(bool async)
     {
-        await base.Update_with_invalid_lambda_throws(async);
 
         AssertExecuteUpdateSql();
     }
@@ -1219,9 +1229,10 @@ WHERE `c`.`CustomerID` LIKE 'F%'
 """);
     }
 
-    public override async Task Update_with_left_join_set_constant(bool async)
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual async Task Update_with_left_join_set_constant(bool async)
     {
-        await base.Update_with_left_join_set_constant(async);
 
         AssertExecuteUpdateSql(
 """

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Query.Inheritance;
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,6 @@ using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 using Pomelo.EntityFrameworkCore.MySql.Tests;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests
 {
@@ -309,7 +309,7 @@ SELECT ROW_COUNT();",
                     });
         }
 
-        [ConditionalTheory(Skip = "For this to work, either MySqlMigrator needs to be involved, or the primary key related stored procedures need to be handled by MySqlMigrationsSqlGenerator instead. The later is probably the way to go. We should move the primary key related stored procedures to its own service, so ti can be potentially be customized by users.")]
+        [ConditionalFact(Skip = "For this to work, either MySqlMigrator needs to be involved, or the primary key related stored procedures need to be handled by MySqlMigrationsSqlGenerator instead. The later is probably the way to go. We should move the primary key related stored procedures to its own service, so ti can be potentially be customized by users.")]
         public override async Task Add_primary_key_string()
         {
             await base.Add_primary_key_string();
@@ -327,7 +327,7 @@ ALTER TABLE `People` ADD CONSTRAINT `PK_Foo` PRIMARY KEY (`SomeField1`, `SomeFie
 """);
         }
 
-        [ConditionalTheory(Skip = "For this to work, either MySqlMigrator needs to be involved, or the primary key related stored procedures need to be handled by MySqlMigrationsSqlGenerator instead. The later is probably the way to go. We should move the primary key related stored procedures to its own service, so ti can be potentially be customized by users.")]
+        [ConditionalFact(Skip = "For this to work, either MySqlMigrator needs to be involved, or the primary key related stored procedures need to be handled by MySqlMigrationsSqlGenerator instead. The later is probably the way to go. We should move the primary key related stored procedures to its own service, so ti can be potentially be customized by users.")]
         public override async Task Add_primary_key_with_name()
         {
             await base.Add_primary_key_with_name();
@@ -335,7 +335,7 @@ ALTER TABLE `People` ADD CONSTRAINT `PK_Foo` PRIMARY KEY (`SomeField1`, `SomeFie
             AssertSql("");
         }
 
-        [ConditionalTheory(Skip = "Are we not scaffolding unique constraints yet?")]
+        [ConditionalFact(Skip = "Are we not scaffolding unique constraints yet?")]
         public override async Task Add_unique_constraint()
         {
             await base.Add_unique_constraint();
@@ -343,7 +343,7 @@ ALTER TABLE `People` ADD CONSTRAINT `PK_Foo` PRIMARY KEY (`SomeField1`, `SomeFie
             AssertSql("");
         }
 
-        [ConditionalTheory(Skip = "Are we not scaffolding unique constraints yet?")]
+        [ConditionalFact(Skip = "Are we not scaffolding unique constraints yet?")]
         public override async Task Add_unique_constraint_composite_with_name()
         {
             await base.Add_unique_constraint_composite_with_name();
@@ -817,8 +817,8 @@ ALTER TABLE `People` MODIFY COLUMN `Sum` int AS (`X` - `Y`);
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var nameColumn = Assert.Single(table.Columns.Where(c => c.Name == "Name"));
-                    var brandColumn = Assert.Single(table.Columns.Where(c => c.Name == "Brand"));
+                    var nameColumn = Assert.Single(table.Columns, c => c.Name == "Name");
+                    var brandColumn = Assert.Single(table.Columns, c => c.Name == "Brand");
 
                     Assert.Null(nameColumn.Collation);
                     Assert.Equal(NonDefaultCollation, brandColumn.Collation);
@@ -848,7 +848,7 @@ ALTER TABLE `People` MODIFY COLUMN `Sum` int AS (`X` - `Y`);
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var nameColumn = Assert.Single(table.Columns.Where(c => c.Name == "Name"));
+                    var nameColumn = Assert.Single(table.Columns, c => c.Name == "Name");
 
                     Assert.True(nameColumn[MySqlAnnotationNames.CharSet] is "utf8mb3"
                         or "utf8");
@@ -876,7 +876,7 @@ ALTER TABLE `People` MODIFY COLUMN `Sum` int AS (`X` - `Y`);
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var iceCreamIdColumn = Assert.Single(table.Columns.Where(c => c.Name == "IceCreamId"));
+                    var iceCreamIdColumn = Assert.Single(table.Columns, c => c.Name == "IceCreamId");
 
                     Assert.Equal("ascii_general_ci", iceCreamIdColumn.Collation);
                 });
@@ -905,7 +905,7 @@ ALTER TABLE `People` MODIFY COLUMN `Sum` int AS (`X` - `Y`);
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var iceCreamIdColumn = Assert.Single(table.Columns.Where(c => c.Name == "IceCreamId"));
+                    var iceCreamIdColumn = Assert.Single(table.Columns, c => c.Name == "IceCreamId");
 
                     Assert.Equal(NonDefaultCollation, iceCreamIdColumn.Collation);
                 });
@@ -934,7 +934,7 @@ ALTER TABLE `People` MODIFY COLUMN `Sum` int AS (`X` - `Y`);
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var iceCreamIdColumn = Assert.Single(table.Columns.Where(c => c.Name == "IceCreamId"));
+                    var iceCreamIdColumn = Assert.Single(table.Columns, c => c.Name == "IceCreamId");
 
                     Assert.Equal(NonDefaultCollation, iceCreamIdColumn.Collation);
                 });
@@ -963,7 +963,7 @@ ALTER TABLE `People` MODIFY COLUMN `Sum` int AS (`X` - `Y`);
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var iceCreamIdColumn = Assert.Single(table.Columns.Where(c => c.Name == "IceCreamId"));
+                    var iceCreamIdColumn = Assert.Single(table.Columns, c => c.Name == "IceCreamId");
 
                     Assert.Null(iceCreamIdColumn.Collation);
                 });
@@ -1006,8 +1006,8 @@ ALTER TABLE `People` MODIFY COLUMN `Sum` int AS (`X` - `Y`);
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var nameColumn = Assert.Single(table.Columns.Where(c => c.Name == "Name"));
-                    var brandColumn = Assert.Single(table.Columns.Where(c => c.Name == "Brand"));
+                    var nameColumn = Assert.Single(table.Columns, c => c.Name == "Name");
+                    var brandColumn = Assert.Single(table.Columns, c => c.Name == "Brand");
 
                     Assert.Equal(NonDefaultCollation, nameColumn.Collation);
                     Assert.Null(brandColumn.Collation);
@@ -1049,8 +1049,8 @@ ALTER TABLE `People` MODIFY COLUMN `Sum` int AS (`X` - `Y`);
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var nameColumn = Assert.Single(table.Columns.Where(c => c.Name == "Name"));
-                    var brandColumn = Assert.Single(table.Columns.Where(c => c.Name == "Brand"));
+                    var nameColumn = Assert.Single(table.Columns, c => c.Name == "Name");
+                    var brandColumn = Assert.Single(table.Columns, c => c.Name == "Brand");
 
                     Assert.Equal(NonDefaultCollation, nameColumn.Collation);
                     Assert.Null(brandColumn.Collation);
@@ -1238,9 +1238,9 @@ $@"ALTER TABLE `IceCream` MODIFY COLUMN `Brand` longtext COLLATE {NonDefaultColl
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var nameColumn = Assert.Single(table.Columns.Where(c => c.Name == "Name"));
-                    var brandColumn = Assert.Single(table.Columns.Where(c => c.Name == "Brand"));
-                    var complexBrandColumn = Assert.Single(table.Columns.Where(c => c.Name == "ComplexProperty_Brand"));
+                    var nameColumn = Assert.Single(table.Columns, c => c.Name == "Name");
+                    var brandColumn = Assert.Single(table.Columns, c => c.Name == "Brand");
+                    var complexBrandColumn = Assert.Single(table.Columns, c => c.Name == "ComplexProperty_Brand");
 
                     Assert.Null(nameColumn[MySqlAnnotationNames.CharSet]);
                     Assert.Null(nameColumn.Collation);
@@ -1282,8 +1282,8 @@ $@"ALTER TABLE `IceCream` MODIFY COLUMN `Brand` longtext COLLATE {NonDefaultColl
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var nameColumn = Assert.Single(table.Columns.Where(c => c.Name == "Name"));
-                    var brandColumn = Assert.Single(table.Columns.Where(c => c.Name == "Brand"));
+                    var nameColumn = Assert.Single(table.Columns, c => c.Name == "Name");
+                    var brandColumn = Assert.Single(table.Columns, c => c.Name == "Brand");
 
                     Assert.Null(nameColumn[MySqlAnnotationNames.CharSet]);
                     Assert.Null(nameColumn.Collation);
@@ -1321,7 +1321,7 @@ $@"ALTER TABLE `IceCream` MODIFY COLUMN `Brand` longtext COLLATE {NonDefaultColl
                 result =>
                 {
                     var table = Assert.Single(result.Tables);
-                    var nameColumn = Assert.Single(table.Columns.Where(c => c.Name == "Name"));
+                    var nameColumn = Assert.Single(table.Columns, c => c.Name == "Name");
 
                     Assert.Equal(NonDefaultCharSet, nameColumn[MySqlAnnotationNames.CharSet]);
                     Assert.Equal("longtext", nameColumn.StoreType);
@@ -1403,7 +1403,7 @@ $@"ALTER TABLE `IceCream` MODIFY COLUMN `Brand` longtext COLLATE {NonDefaultColl
                     .Entity(
                         "Foo", e => e.HasAlternateKey("FooAK")),
                 builder => { },
-                model => Assert.Empty(Assert.Single(model.Tables.Where(t => t.Name == "Foo"))?.UniqueConstraints));
+                model => Assert.Empty(Assert.Single(model.Tables, t => t.Name == "Foo")?.UniqueConstraints));
 
             AssertSql(
                 @"ALTER TABLE `Foo` DROP KEY `AK_Foo_FooAK`;");
@@ -1436,7 +1436,7 @@ $@"ALTER TABLE `IceCream` MODIFY COLUMN `Brand` longtext COLLATE {NonDefaultColl
                         "Foo", e => e.HasAlternateKey("FooAK")),
                 builder => { },
                 migrationBuilder => migrationBuilder.DropUniqueConstraint("AK_Foo_FooAK", "Foo"),
-                model => Assert.Empty(Assert.Single(model.Tables.Where(t => t.Name == "Foo"))?.UniqueConstraints));
+                model => Assert.Empty(Assert.Single(model.Tables, t => t.Name == "Foo")?.UniqueConstraints));
 
             AssertSql(
                 @"ALTER TABLE `Foo` DROP KEY `AK_Foo_FooAK`;");
@@ -1469,7 +1469,7 @@ $@"ALTER TABLE `IceCream` MODIFY COLUMN `Brand` longtext COLLATE {NonDefaultColl
                         "Foo", e => e.HasAlternateKey("FooAK")),
                 builder => { },
                 migrationBuilder => migrationBuilder.DropUniqueConstraint("AK_Foo_FooAK", "Foo", recreateForeignKeys: true),
-                model => Assert.Empty(Assert.Single(model.Tables.Where(t => t.Name == "Foo"))?.UniqueConstraints));
+                model => Assert.Empty(Assert.Single(model.Tables, t => t.Name == "Foo")?.UniqueConstraints));
 
             AssertSql(
                 @"ALTER TABLE `Foo` DROP FOREIGN KEY `FK_Foo_Bar_BarFK`;",

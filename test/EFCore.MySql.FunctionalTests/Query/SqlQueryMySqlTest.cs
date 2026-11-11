@@ -7,7 +7,9 @@ using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.TestModels.Northwind;
+using System.Linq;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query;
 
@@ -675,9 +677,24 @@ WHERE `m`.`CustomerID` IN (
 """);
     }
 
-    public override async Task Multiple_occurrences_of_SqlQuery_with_db_parameter_adds_parameter_only_once(bool async)
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual async Task Multiple_occurrences_of_SqlQuery_with_db_parameter_adds_parameter_only_once(bool async)
     {
-        await base.Multiple_occurrences_of_SqlQuery_with_db_parameter_adds_parameter_only_once(async);
+
+        using var context = CreateContext();
+        var city = "Seattle";
+        var qqlQuery = context.Database.SqlQueryRaw<UnmappedCustomer>(
+            NormalizeDelimitersInRawString(@"SELECT * FROM [Customers] WHERE [City] = {0}"),
+            CreateDbParameter("city", city));
+
+        var query = qqlQuery.Intersect(qqlQuery);
+
+        var actual = async
+            ? await query.ToArrayAsync()
+            : query.ToArray();
+
+        Assert.Single(actual);
 
         AssertSql(
 """

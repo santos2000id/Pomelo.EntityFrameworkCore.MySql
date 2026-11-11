@@ -15,9 +15,9 @@ using Xunit;
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query;
 
 // Disabled via internal access. The EF Core 7.0 JSON support isn't currently implemented.
-internal class AdHocJsonQueryMySqlTest : AdHocJsonQueryTestBase
+internal class AdHocJsonQueryMySqlTest(NonSharedFixture fixture) : AdHocJsonQueryTestBase(fixture)
 {
-    protected override ITestStoreFactory TestStoreFactory
+    protected override ITestStoreFactory NonSharedTestStoreFactory
         => MySqlTestStoreFactory.Instance;
 
     protected override async Task Seed29219(DbContext ctx)
@@ -201,12 +201,12 @@ N'{"Collection":[{"Bar":21,"Foo":"c21"},{"Bar":22,"Foo":"c22"}]}',
     [MemberData(nameof(IsAsyncData))]
     public virtual async Task Read_enum_property_with_legacy_values(bool async)
     {
-        var contextFactory = await InitializeAsync<DbContext>(
+        var contextFactory = await InitializeNonSharedTest<DbContext>(
             onModelCreating: BuildModelEnumLegacyValues,
             onConfiguring: b => b.ConfigureWarnings(ConfigureWarnings),
             seed: SeedEnumLegacyValues);
 
-        using (var context = contextFactory.CreateContext())
+        using (var context = contextFactory.CreateDbContext())
         {
             var query = context.Set<MyEntityEnumLegacyValues>().Select(
                 x => new
@@ -230,13 +230,13 @@ N'{"Collection":[{"Bar":21,"Foo":"c21"},{"Bar":22,"Foo":"c22"}]}',
     [MemberData(nameof(IsAsyncData))]
     public virtual async Task Read_json_entity_with_enum_properties_with_legacy_values(bool async)
     {
-        var contextFactory = await InitializeAsync<DbContext>(
+        var contextFactory = await InitializeNonSharedTest<DbContext>(
             onModelCreating: BuildModelEnumLegacyValues,
             onConfiguring: b => b.ConfigureWarnings(ConfigureWarnings),
             seed: SeedEnumLegacyValues,
             shouldLogCategory: c => c == DbLoggerCategory.Query.Name);
 
-        using (var context = contextFactory.CreateContext())
+        using (var context = contextFactory.CreateDbContext())
         {
             var query = context.Set<MyEntityEnumLegacyValues>().Select(x => x.Reference).AsNoTracking();
 
@@ -253,31 +253,23 @@ N'{"Collection":[{"Bar":21,"Foo":"c21"},{"Bar":22,"Foo":"c22"}]}',
         }
 
         var testLogger = new TestLogger<MySqlLoggingDefinitions>();
-        Assert.Single(
-            ListLoggerFactory.Log.Where(
-                l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(ByteEnumLegacyValues))));
-        Assert.Single(
-            ListLoggerFactory.Log.Where(
-                l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(IntEnumLegacyValues))));
-        Assert.Single(
-            ListLoggerFactory.Log.Where(
-                l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(LongEnumLegacyValues))));
-        Assert.Single(
-            ListLoggerFactory.Log.Where(
-                l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(ULongEnumLegacyValues))));
+        Assert.Single(ListLoggerFactory.Log, l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(ByteEnumLegacyValues)));
+        Assert.Single(ListLoggerFactory.Log, l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(IntEnumLegacyValues)));
+        Assert.Single(ListLoggerFactory.Log, l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(LongEnumLegacyValues)));
+        Assert.Single(ListLoggerFactory.Log, l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(ULongEnumLegacyValues)));
     }
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
     public virtual async Task Read_json_entity_collection_with_enum_properties_with_legacy_values(bool async)
     {
-        var contextFactory = await InitializeAsync<DbContext>(
+        var contextFactory = await InitializeNonSharedTest<DbContext>(
             onModelCreating: BuildModelEnumLegacyValues,
             onConfiguring: b => b.ConfigureWarnings(ConfigureWarnings),
             seed: SeedEnumLegacyValues,
             shouldLogCategory: c => c == DbLoggerCategory.Query.Name);
 
-        using (var context = contextFactory.CreateContext())
+        using (var context = contextFactory.CreateDbContext())
         {
             var query = context.Set<MyEntityEnumLegacyValues>().Select(x => x.Collection).AsNoTracking();
 
@@ -300,18 +292,10 @@ N'{"Collection":[{"Bar":21,"Foo":"c21"},{"Bar":22,"Foo":"c22"}]}',
         }
 
         var testLogger = new TestLogger<MySqlLoggingDefinitions>();
-        Assert.Single(
-            ListLoggerFactory.Log.Where(
-                l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(ByteEnumLegacyValues))));
-        Assert.Single(
-            ListLoggerFactory.Log.Where(
-                l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(IntEnumLegacyValues))));
-        Assert.Single(
-            ListLoggerFactory.Log.Where(
-                l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(LongEnumLegacyValues))));
-        Assert.Single(
-            ListLoggerFactory.Log.Where(
-                l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(ULongEnumLegacyValues))));
+        Assert.Single(ListLoggerFactory.Log, l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(ByteEnumLegacyValues)));
+        Assert.Single(ListLoggerFactory.Log, l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(IntEnumLegacyValues)));
+        Assert.Single(ListLoggerFactory.Log, l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(LongEnumLegacyValues)));
+        Assert.Single(ListLoggerFactory.Log, l => l.Message == CoreResources.LogStringEnumValueInJson(testLogger).GenerateMessage(nameof(ULongEnumLegacyValues)));
     }
 
     private Task SeedEnumLegacyValues(DbContext ctx)

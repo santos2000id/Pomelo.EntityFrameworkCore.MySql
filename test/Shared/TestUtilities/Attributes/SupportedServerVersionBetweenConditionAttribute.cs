@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.TestUtilities.Xunit;
+using Microsoft.EntityFrameworkCore.TestUtilities;
 
 namespace Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes
 {

@@ -16,7 +16,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
     /// "WHERE `boolColumn`" doesn't use available indices, while "WHERE `boolColumn` = TRUE" does.
     /// See https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1104
     /// </summary>
-    public class MySqlBoolOptimizingExpressionVisitor : SqlExpressionVisitor
+    public class MySqlBoolOptimizingExpressionVisitor : ExpressionVisitor
     {
         private bool _optimize;
         private readonly ISqlExpressionFactory _sqlExpressionFactory;
@@ -26,6 +26,47 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
         {
             _sqlExpressionFactory = sqlExpressionFactory;
         }
+
+        protected override Expression VisitExtension(Expression node)
+            => node switch
+            {
+                AtTimeZoneExpression expression => VisitAtTimeZone(expression),
+                CaseExpression expression => VisitCase(expression),
+                CollateExpression expression => VisitCollate(expression),
+                ColumnExpression expression => VisitColumn(expression),
+                DeleteExpression expression => VisitDelete(expression),
+                DistinctExpression expression => VisitDistinct(expression),
+                ExistsExpression expression => VisitExists(expression),
+                FromSqlExpression expression => VisitFromSql(expression),
+                InExpression expression => VisitIn(expression),
+                LikeExpression expression => VisitLike(expression),
+                SelectExpression expression => VisitSelect(expression),
+                SqlBinaryExpression expression => VisitSqlBinary(expression),
+                SqlUnaryExpression expression => VisitSqlUnary(expression),
+                SqlConstantExpression expression => VisitSqlConstant(expression),
+                SqlFragmentExpression expression => VisitSqlFragment(expression),
+                SqlFunctionExpression expression => VisitSqlFunction(expression),
+                TableValuedFunctionExpression expression => VisitTableValuedFunction(expression),
+                SqlParameterExpression expression => VisitSqlParameter(expression),
+                TableExpression expression => VisitTable(expression),
+                ProjectionExpression expression => VisitProjection(expression),
+                OrderingExpression expression => VisitOrdering(expression),
+                CrossJoinExpression expression => VisitCrossJoin(expression),
+                CrossApplyExpression expression => VisitCrossApply(expression),
+                OuterApplyExpression expression => VisitOuterApply(expression),
+                InnerJoinExpression expression => VisitInnerJoin(expression),
+                LeftJoinExpression expression => VisitLeftJoin(expression),
+                RowValueExpression expression => VisitRowValue(expression),
+                ScalarSubqueryExpression expression => VisitScalarSubquery(expression),
+                RowNumberExpression expression => VisitRowNumber(expression),
+                ExceptExpression expression => VisitExcept(expression),
+                IntersectExpression expression => VisitIntersect(expression),
+                UnionExpression expression => VisitUnion(expression),
+                UpdateExpression expression => VisitUpdate(expression),
+                JsonScalarExpression expression => VisitJsonScalar(expression),
+                ValuesExpression expression => VisitValues(expression),
+                _ => base.VisitExtension(node)
+            };
 
         private Expression ApplyConversion(SqlExpression sqlExpression, bool condition)
         {
@@ -41,7 +82,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return sqlExpression;
         }
 
-        protected override Expression VisitAtTimeZone(AtTimeZoneExpression atTimeZoneExpression)
+        protected virtual Expression VisitAtTimeZone(AtTimeZoneExpression atTimeZoneExpression)
         {
             var parentOptimize = _optimize;
             _optimize = false;
@@ -52,7 +93,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return atTimeZoneExpression.Update(operand, timeZone);
         }
 
-        protected override Expression VisitCase(CaseExpression caseExpression)
+        protected virtual Expression VisitCase(CaseExpression caseExpression)
         {
             Check.NotNull(caseExpression, nameof(caseExpression));
 
@@ -79,7 +120,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(caseExpression.Update(operand, whenClauses, elseResult), condition: false);
         }
 
-        protected override Expression VisitCollate(CollateExpression collateExpression)
+        protected virtual Expression VisitCollate(CollateExpression collateExpression)
         {
             Check.NotNull(collateExpression, nameof(collateExpression));
 
@@ -91,17 +132,17 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(collateExpression.Update(operand), condition: false);
         }
 
-        protected override Expression VisitColumn(ColumnExpression columnExpression)
+        protected virtual Expression VisitColumn(ColumnExpression columnExpression)
         {
             Check.NotNull(columnExpression, nameof(columnExpression));
 
             return ApplyConversion(columnExpression, condition: false);
         }
 
-        protected override Expression VisitDelete(DeleteExpression deleteExpression)
+        protected virtual Expression VisitDelete(DeleteExpression deleteExpression)
             => deleteExpression.Update(deleteExpression.Table, (SelectExpression)Visit(deleteExpression.SelectExpression));
 
-        protected override Expression VisitDistinct(DistinctExpression distinctExpression)
+        protected virtual Expression VisitDistinct(DistinctExpression distinctExpression)
         {
             Check.NotNull(distinctExpression, nameof(distinctExpression));
 
@@ -113,7 +154,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(distinctExpression.Update(operand), condition: false);
         }
 
-        protected override Expression VisitExists(ExistsExpression existsExpression)
+        protected virtual Expression VisitExists(ExistsExpression existsExpression)
         {
             Check.NotNull(existsExpression, nameof(existsExpression));
 
@@ -125,14 +166,14 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(existsExpression.Update(subquery), condition: true);
         }
 
-        protected override Expression VisitFromSql(FromSqlExpression fromSqlExpression)
+        protected virtual Expression VisitFromSql(FromSqlExpression fromSqlExpression)
         {
             Check.NotNull(fromSqlExpression, nameof(fromSqlExpression));
 
             return fromSqlExpression;
         }
 
-        protected override Expression VisitIn(InExpression inExpression)
+        protected virtual Expression VisitIn(InExpression inExpression)
         {
             var parentOptimize = _optimize;
 
@@ -171,7 +212,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(inExpression.Update(item, subquery, newValues ?? values, valuesParameter), condition: true);
         }
 
-        protected override Expression VisitLike(LikeExpression likeExpression)
+        protected virtual Expression VisitLike(LikeExpression likeExpression)
         {
             Check.NotNull(likeExpression, nameof(likeExpression));
 
@@ -185,7 +226,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(likeExpression.Update(match, pattern, escapeChar), condition: true);
         }
 
-        protected override Expression VisitSelect(SelectExpression selectExpression)
+        protected virtual Expression VisitSelect(SelectExpression selectExpression)
         {
             Check.NotNull(selectExpression, nameof(selectExpression));
 
@@ -249,7 +290,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
                 : selectExpression;
         }
 
-        protected override Expression VisitSqlBinary(SqlBinaryExpression sqlBinaryExpression)
+        protected virtual Expression VisitSqlBinary(SqlBinaryExpression sqlBinaryExpression)
         {
             Check.NotNull(sqlBinaryExpression, nameof(sqlBinaryExpression));
 
@@ -319,7 +360,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(sqlBinaryExpression, condition);
         }
 
-        protected override Expression VisitSqlUnary(SqlUnaryExpression sqlUnaryExpression)
+        protected virtual Expression VisitSqlUnary(SqlUnaryExpression sqlUnaryExpression)
         {
             Check.NotNull(sqlUnaryExpression, nameof(sqlUnaryExpression));
 
@@ -388,21 +429,21 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(expression, condition: resultCondition);
         }
 
-        protected override Expression VisitSqlConstant(SqlConstantExpression sqlConstantExpression)
+        protected virtual Expression VisitSqlConstant(SqlConstantExpression sqlConstantExpression)
         {
             Check.NotNull(sqlConstantExpression, nameof(sqlConstantExpression));
 
             return ApplyConversion(sqlConstantExpression, condition: false);
         }
 
-        protected override Expression VisitSqlFragment(SqlFragmentExpression sqlFragmentExpression)
+        protected virtual Expression VisitSqlFragment(SqlFragmentExpression sqlFragmentExpression)
         {
             Check.NotNull(sqlFragmentExpression, nameof(sqlFragmentExpression));
 
             return sqlFragmentExpression;
         }
 
-        protected override Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
+        protected virtual Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
         {
             Check.NotNull(sqlFunctionExpression, nameof(sqlFunctionExpression));
 
@@ -428,7 +469,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(newFunction, condition);
         }
 
-        protected override Expression VisitTableValuedFunction(TableValuedFunctionExpression tableValuedFunctionExpression)
+        protected virtual Expression VisitTableValuedFunction(TableValuedFunctionExpression tableValuedFunctionExpression)
         {
             Check.NotNull(tableValuedFunctionExpression, nameof(tableValuedFunctionExpression));
 
@@ -445,21 +486,21 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return tableValuedFunctionExpression.Update(arguments);
         }
 
-        protected override Expression VisitSqlParameter(SqlParameterExpression sqlParameterExpression)
+        protected virtual Expression VisitSqlParameter(SqlParameterExpression sqlParameterExpression)
         {
             Check.NotNull(sqlParameterExpression, nameof(sqlParameterExpression));
 
             return ApplyConversion(sqlParameterExpression, condition: false);
         }
 
-        protected override Expression VisitTable(TableExpression tableExpression)
+        protected virtual Expression VisitTable(TableExpression tableExpression)
         {
             Check.NotNull(tableExpression, nameof(tableExpression));
 
             return tableExpression;
         }
 
-        protected override Expression VisitProjection(ProjectionExpression projectionExpression)
+        protected virtual Expression VisitProjection(ProjectionExpression projectionExpression)
         {
             Check.NotNull(projectionExpression, nameof(projectionExpression));
 
@@ -468,7 +509,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return projectionExpression.Update(expression);
         }
 
-        protected override Expression VisitOrdering(OrderingExpression orderingExpression)
+        protected virtual Expression VisitOrdering(OrderingExpression orderingExpression)
         {
             Check.NotNull(orderingExpression, nameof(orderingExpression));
 
@@ -477,7 +518,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return orderingExpression.Update(expression);
         }
 
-        protected override Expression VisitCrossJoin(CrossJoinExpression crossJoinExpression)
+        protected virtual Expression VisitCrossJoin(CrossJoinExpression crossJoinExpression)
         {
             Check.NotNull(crossJoinExpression, nameof(crossJoinExpression));
 
@@ -489,7 +530,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return crossJoinExpression.Update(table);
         }
 
-        protected override Expression VisitCrossApply(CrossApplyExpression crossApplyExpression)
+        protected virtual Expression VisitCrossApply(CrossApplyExpression crossApplyExpression)
         {
             Check.NotNull(crossApplyExpression, nameof(crossApplyExpression));
 
@@ -501,7 +542,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return crossApplyExpression.Update(table);
         }
 
-        protected override Expression VisitOuterApply(OuterApplyExpression outerApplyExpression)
+        protected virtual Expression VisitOuterApply(OuterApplyExpression outerApplyExpression)
         {
             Check.NotNull(outerApplyExpression, nameof(outerApplyExpression));
 
@@ -513,7 +554,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return outerApplyExpression.Update(table);
         }
 
-        protected override Expression VisitInnerJoin(InnerJoinExpression innerJoinExpression)
+        protected virtual Expression VisitInnerJoin(InnerJoinExpression innerJoinExpression)
         {
             Check.NotNull(innerJoinExpression, nameof(innerJoinExpression));
 
@@ -527,7 +568,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return innerJoinExpression.Update(table, joinPredicate);
         }
 
-        protected override Expression VisitLeftJoin(LeftJoinExpression leftJoinExpression)
+        protected virtual Expression VisitLeftJoin(LeftJoinExpression leftJoinExpression)
         {
             Check.NotNull(leftJoinExpression, nameof(leftJoinExpression));
 
@@ -541,7 +582,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return leftJoinExpression.Update(table, joinPredicate);
         }
 
-        protected override Expression VisitRowValue(RowValueExpression rowValueExpression)
+        protected virtual Expression VisitRowValue(RowValueExpression rowValueExpression)
         {
             var parentOptimize = _optimize;
             _optimize = false;
@@ -556,7 +597,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return rowValueExpression.Update(values);
         }
 
-        protected override Expression VisitScalarSubquery(ScalarSubqueryExpression scalarSubqueryExpression)
+        protected virtual Expression VisitScalarSubquery(ScalarSubqueryExpression scalarSubqueryExpression)
         {
             Check.NotNull(scalarSubqueryExpression, nameof(scalarSubqueryExpression));
 
@@ -567,7 +608,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(scalarSubqueryExpression.Update(subquery), condition: false);
         }
 
-        protected override Expression VisitRowNumber(RowNumberExpression rowNumberExpression)
+        protected virtual Expression VisitRowNumber(RowNumberExpression rowNumberExpression)
         {
             Check.NotNull(rowNumberExpression, nameof(rowNumberExpression));
 
@@ -595,7 +636,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return ApplyConversion(rowNumberExpression.Update(partitions, orderings), condition: false);
         }
 
-        protected override Expression VisitExcept(ExceptExpression exceptExpression)
+        protected virtual Expression VisitExcept(ExceptExpression exceptExpression)
         {
             Check.NotNull(exceptExpression, nameof(exceptExpression));
 
@@ -608,7 +649,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return exceptExpression.Update(source1, source2);
         }
 
-        protected override Expression VisitIntersect(IntersectExpression intersectExpression)
+        protected virtual Expression VisitIntersect(IntersectExpression intersectExpression)
         {
             Check.NotNull(intersectExpression, nameof(intersectExpression));
 
@@ -621,7 +662,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return intersectExpression.Update(source1, source2);
         }
 
-        protected override Expression VisitUnion(UnionExpression unionExpression)
+        protected virtual Expression VisitUnion(UnionExpression unionExpression)
         {
             Check.NotNull(unionExpression, nameof(unionExpression));
 
@@ -634,7 +675,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return unionExpression.Update(source1, source2);
         }
 
-        protected override Expression VisitUpdate(UpdateExpression updateExpression)
+        protected virtual Expression VisitUpdate(UpdateExpression updateExpression)
         {
             var selectExpression = (SelectExpression)Visit(updateExpression.SelectExpression);
             var parentOptimize = _optimize;
@@ -664,10 +705,10 @@ namespace Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal
             return updateExpression.Update(selectExpression, columnValueSetters ?? updateExpression.ColumnValueSetters);
         }
 
-        protected override Expression VisitJsonScalar(JsonScalarExpression jsonScalarExpression)
+        protected virtual Expression VisitJsonScalar(JsonScalarExpression jsonScalarExpression)
             => ApplyConversion(jsonScalarExpression, condition: false);
 
-        protected override Expression VisitValues(ValuesExpression valuesExpression)
+        protected virtual Expression VisitValues(ValuesExpression valuesExpression)
         {
             var parentOptimize = _optimize;
             _optimize = false;

@@ -1,14 +1,17 @@
-﻿using System;
+// Copyright (c) Pomelo Foundation. All rights reserved.
+// Licensed under the MIT. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Xunit.Abstractions;
 using Xunit.Sdk;
+using Xunit.v3;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities.Xunit
 {
-    public class MySqlTestCaseOrderer : ITestCaseOrderer, IMySqlTestClassOrderer
+    public class MySqlTestCaseOrderer : ITestCaseOrderer, ITestClassOrderer
     {
 #if SPECIFIC_TEST_ORDER
         private static readonly bool _isSpecificTestCaseOrderingEnabled = true;
@@ -17,6 +20,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities.Xunit
 #endif
 
         private static string[] _specificTestCaseDisplayNamesInOrder;
+
         public static string[] SpecificTestCaseDisplayNamesInOrder
             => _specificTestCaseDisplayNamesInOrder ??= _isSpecificTestCaseOrderingEnabled &&
                                                         Path.GetFullPath(@"..\..\..\TestResults\SpecificTestOrder.txt") is var path &&
@@ -37,15 +41,17 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities.Xunit
                 .ToDictionary(t => t.s, t => t.i);
         }
 
-        public IEnumerable<TTestCase> OrderTestCases<TTestCase>(IEnumerable<TTestCase> testCases)
+        public IReadOnlyCollection<TTestCase> OrderTestCases<TTestCase>(IReadOnlyCollection<TTestCase> testCases)
             where TTestCase : ITestCase
             => testCases
-                .OrderBy(c => _specificTestCaseDisplayNamesWithIndex.GetValueOrDefault(c.DisplayName, int.MaxValue))
-                .ThenBy(c => c.DisplayName, StringComparer.OrdinalIgnoreCase)
-                .ThenBy(c => c.DisplayName, StringComparer.Ordinal)
-                .ThenBy(c => c.UniqueID);
+                .OrderBy(c => _specificTestCaseDisplayNamesWithIndex.GetValueOrDefault(c.TestCaseDisplayName, int.MaxValue))
+                .ThenBy(c => c.TestCaseDisplayName, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(c => c.TestCaseDisplayName, StringComparer.Ordinal)
+                .ThenBy(c => c.UniqueID)
+                .ToArray();
 
-        public IEnumerable<ITestClass> OrderTestClasses(IEnumerable<ITestClass> testClasses)
-            => testClasses.OrderBy(c => c.Class.Name);
+        public IReadOnlyCollection<TTestClass> OrderTestClasses<TTestClass>(IReadOnlyCollection<TTestClass> testClasses)
+            where TTestClass : ITestClass
+            => testClasses.OrderBy(c => c.TestClassName, StringComparer.Ordinal).ToArray();
     }
 }

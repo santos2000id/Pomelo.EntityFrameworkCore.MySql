@@ -10,7 +10,7 @@ public class DebugRelationalCommand : RelationalCommand
         [NotNull] RelationalCommandBuilderDependencies dependencies,
         [NotNull] string commandText,
         [NotNull] IReadOnlyList<IRelationalParameter> parameters)
-        : base(dependencies, commandText, parameters)
+        : base(dependencies, commandText, commandText, parameters)
     {
     }
 

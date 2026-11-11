@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -29,7 +29,7 @@ public class GraphUpdatesMySqlClientCascadeTest : GraphUpdatesMySqlTestBase<Grap
             foreach (var foreignKey in modelBuilder.Model
                          .GetEntityTypes()
                          .SelectMany(e => e.GetDeclaredForeignKeys())
-                         .Where(e => e.DeleteBehavior == DeleteBehavior.Cascade))
+                         .Where(e => !e.IsOwnership && e.DeleteBehavior == DeleteBehavior.Cascade))
             {
                 foreignKey.DeleteBehavior = DeleteBehavior.ClientCascade;
             }

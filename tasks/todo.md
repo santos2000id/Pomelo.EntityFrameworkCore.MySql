@@ -1,0 +1,21 @@
+# EF Core 11 / .NET 11 migration checklist
+
+- [x] Update SDK, target frameworks, EF/ASP.NET package versions, and EF tool.
+- [x] Upgrade vulnerable MySqlConnector package and restore the solution.
+- [x] Compile, fix EF Core 11 API breaks, and add regression coverage where needed.
+  - Provider and extensions compile in Debug/Release (0 warnings, 0 errors).
+  - Implemented MySqlTypeMappingPostprocessor.
+  - Added JsonTypePlaceholder mapping for EF Core 11 complex JSON collections.
+  - Fixed primitive-collection option cloning and parameterized collection handling for MySQL 5.6 (no JSON_TABLE).
+  - Ported test projects to xUnit v3 runner and resolved fixture and attribute conventions.
+  - Verified against MySQL 5.6.26 local instance:
+    - UpgradeTests: 20 passed / 0 failed.
+    - Unit tests (EFCore.MySql.Tests): 75 passed / 0 failed.
+    - GraphUpdatesMySqlClientCascadeTest: 1,791 passed / 0 failed.
+    - GraphUpdatesMySqlClientNoActionTest: 1,789 passed / 0 failed.
+    - NonSharedPrimitiveCollectionsQueryMySqlTest: 11 passed / 25 skipped / 0 failed.
+    - AdHocAdvancedMappingsQueryMySqlTest: 47 passed / 3 skipped / 0 failed.
+    - QueryFilterFuncletizationMySqlTest: 28 passed / 0 failed.
+- [x] Update CI, README compatibility table, and package version metadata.
+- [x] Run Debug/Release builds and available tests.
+- [ ] Review diff, commit changes, and push migration branch to the fork.

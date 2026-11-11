@@ -43,6 +43,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.Infrastructure.Internal
             IndexOptimizedBooleanColumns = copyFrom.IndexOptimizedBooleanColumns;
             LimitKeyedOrIndexedStringColumnLength = copyFrom.LimitKeyedOrIndexedStringColumnLength;
             StringComparisonTranslations = copyFrom.StringComparisonTranslations;
+            PrimitiveCollectionsSupport = copyFrom.PrimitiveCollectionsSupport;
         }
 
         /// <summary>

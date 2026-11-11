@@ -25,13 +25,6 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests
             protected override void OnModelCreating(ModelBuilder modelBuilder, DbContext context)
             {
                 base.OnModelCreating(modelBuilder, context);
-
-                foreach (var foreignKey in modelBuilder.Model
-                             .GetEntityTypes()
-                             .SelectMany(e => e.GetDeclaredForeignKeys()))
-                {
-                    foreignKey.DeleteBehavior = DeleteBehavior.ClientNoAction;
-                }
             }
         }
     }

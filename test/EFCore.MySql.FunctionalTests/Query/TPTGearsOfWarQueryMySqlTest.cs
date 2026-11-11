@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore.BulkUpdates.Inheritance;
+using Microsoft.EntityFrameworkCore.Query.Inheritance;
+using Microsoft.EntityFrameworkCore.TestUtilities;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,7 +11,7 @@ using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
 {
@@ -36,7 +39,9 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
                     m => start <= m.Timeline.Date && m.Timeline < end && dates.Contains(m.Timeline)));
         }
 
-        public override Task Where_datetimeoffset_milliseconds_parameter_and_constant(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual Task Where_datetimeoffset_milliseconds_parameter_and_constant(bool async)
         {
             var dateTimeOffset = MySqlTestHelpers.GetExpectedValue(new DateTimeOffset(599898024001234567, new TimeSpan(1, 30, 0)));
 
@@ -55,6 +60,7 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
         }
 
         [ConditionalTheory(Skip = "TODO: Does not work as expected, probably due to some test definition issues.")]
+        [MemberData(nameof(IsAsyncData))]
         public override async Task DateTimeOffsetNow_minus_timespan(bool async)
         {
             var timeSpan = new TimeSpan(10000); // <-- changed from 1000 to 10000 ticks
@@ -75,6 +81,7 @@ WHERE `m`.`Timeline` > (UTC_TIMESTAMP() - @__timeSpan_0)
 
         // TODO: Implement strategy as discussed with @roji (including emails) for EF Core 5.
         [ConditionalTheory(Skip = "#996")]
+        [MemberData(nameof(IsAsyncData))]
         public override Task Client_member_and_unsupported_string_Equals_in_the_same_query(bool async)
         {
             return base.Client_member_and_unsupported_string_Equals_in_the_same_query(async);
@@ -207,12 +214,14 @@ WHERE `m`.`Timeline` > (UTC_TIMESTAMP() - @__timeSpan_0)
         }
 
         [ConditionalTheory(Skip = "MySQL does not support LIMIT with a parameterized argument, unless the statement was prepared. The argument needs to be a numeric constant.")]
+        [MemberData(nameof(IsAsyncData))]
         public override Task Take_without_orderby_followed_by_orderBy_is_pushed_down1(bool async)
         {
             return base.Take_without_orderby_followed_by_orderBy_is_pushed_down1(async);
         }
 
         [ConditionalTheory(Skip = "MySQL does not support LIMIT with a parameterized argument, unless the statement was prepared. The argument needs to be a numeric constant.")]
+        [MemberData(nameof(IsAsyncData))]
         public override Task Take_without_orderby_followed_by_orderBy_is_pushed_down2(bool async)
         {
             return base.Take_without_orderby_followed_by_orderBy_is_pushed_down2(async);
@@ -237,9 +246,22 @@ WHERE `m`.`Timeline` > (UTC_TIMESTAMP() - @__timeSpan_0)
             return base.Correlated_collection_with_groupby_with_complex_grouping_key_not_projecting_identifier_column_with_group_aggregate_in_final_projection(async);
         }
 
-        public override async Task DateTimeOffset_to_unix_time_milliseconds(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task DateTimeOffset_to_unix_time_milliseconds(bool async)
         {
-            await base.DateTimeOffset_to_unix_time_milliseconds(async);
+
+        var unixEpochMilliseconds = DateTimeOffset.UnixEpoch.ToUnixTimeMilliseconds();
+
+        await AssertQuery(
+            async,
+            ss => ss.Set<Gear>()
+                .Include(g => g.Squad.Missions)
+                .Where(
+                    s => s.Squad.Missions
+                            .Where(m => unixEpochMilliseconds == m.Mission.Timeline.ToUnixTimeMilliseconds())
+                            .FirstOrDefault()
+                        == null));
 
         AssertSql(
 """
@@ -261,9 +283,22 @@ ORDER BY `g`.`Nickname`, `g`.`SquadId`, `s`.`Id`, `s1`.`SquadId`
 """);
         }
 
-        public override async Task DateTimeOffset_to_unix_time_seconds(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task DateTimeOffset_to_unix_time_seconds(bool async)
         {
-            await base.DateTimeOffset_to_unix_time_seconds(async);
+
+        var unixEpochSeconds = DateTimeOffset.UnixEpoch.ToUnixTimeSeconds();
+
+        await AssertQuery(
+            async,
+            ss => ss.Set<Gear>()
+                .Include(g => g.Squad.Missions)
+                .Where(
+                    s => s.Squad.Missions
+                            .Where(m => unixEpochSeconds == m.Mission.Timeline.ToUnixTimeSeconds())
+                            .FirstOrDefault()
+                        == null));
 
             AssertSql(
 """
@@ -293,7 +328,9 @@ ORDER BY `g`.`Nickname`, `g`.`SquadId`, `s`.`Id`, `s1`.`SquadId`
             AssertSql("");
         }
 
-        public override async Task Where_datetimeoffset_hour_component(bool async)
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Where_datetimeoffset_hour_component(bool async)
         {
             await AssertQuery(
                 async,

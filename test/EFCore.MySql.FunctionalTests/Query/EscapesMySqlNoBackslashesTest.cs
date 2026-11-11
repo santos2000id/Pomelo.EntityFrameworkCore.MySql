@@ -4,7 +4,6 @@ using Pomelo.EntityFrameworkCore.MySql.FunctionalTests.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure.Internal;
 using Pomelo.EntityFrameworkCore.MySql.Tests;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
 {
@@ -53,6 +52,7 @@ WHERE `a`.`Name` LIKE '% Garden Party'");
         }
 
         [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
         public override async Task Where_query_escapes_literal(bool async)
         {
             await base.Where_query_escapes_literal(async);
@@ -64,6 +64,7 @@ WHERE `a`.`Name` = 'Back\slasher''s'");
         }
 
         [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
         public override async Task Where_query_escapes_parameter(bool async)
         {
             await base.Where_query_escapes_parameter(async);
@@ -77,6 +78,7 @@ WHERE `a`.`Name` = @__artistName_0");
         }
 
         [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
         public override async Task Where_contains_query_escapes(bool async)
         {
             await base.Where_contains_query_escapes(async);

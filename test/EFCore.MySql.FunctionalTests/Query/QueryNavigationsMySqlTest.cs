@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.TestUtilities;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
 {
@@ -20,15 +19,15 @@ namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
             //Fixture.TestSqlLoggerFactory.SetTestOutputHelper(testOutputHelper);
         }
 
-        [ConditionalTheory(Skip = "Issue #573")]
         public override Task Where_subquery_on_navigation(bool async)
         {
+            Assert.Skip("Issue #573");
             return base.Where_subquery_on_navigation(async);
         }
 
-        [ConditionalTheory(Skip = "Issue #573")]
         public override Task Where_subquery_on_navigation2(bool async)
         {
+            Assert.Skip("Issue #573");
             return base.Where_subquery_on_navigation2(async);
         }
 

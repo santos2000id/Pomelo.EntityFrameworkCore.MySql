@@ -1,5 +1,5 @@
+using Xunit;
 ﻿using Microsoft.EntityFrameworkCore.Query;
-using Xunit.Abstractions;
 
 namespace Pomelo.EntityFrameworkCore.MySql.FunctionalTests.Query
 {

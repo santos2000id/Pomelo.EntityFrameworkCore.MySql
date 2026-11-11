@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using Pomelo.EntityFrameworkCore.MySql.Tests.TestUtilities.Attributes;
+using Microsoft.EntityFrameworkCore.TestUtilities;
 using Xunit;
 
 namespace Pomelo.EntityFrameworkCore.MySql.Query
